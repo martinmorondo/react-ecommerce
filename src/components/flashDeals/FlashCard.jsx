@@ -28,7 +28,7 @@ const SamplePrevArrow = (props) => {
 const FlashCard = ({ productItems, addToCart }) => {
     const [count, setCount] = useState(0);
     const increment = () => {
-        setCount(count++);
+        setCount(count + 1);
     }
 
     const settings = {
