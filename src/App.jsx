@@ -4,11 +4,14 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Header from './components/header/Header';
 import Pages from './pages/Pages';
 import Data from './components/Data';
+import Sdata from './components/shop/Sdata';
 import Cart from './common/Cart/Cart';
+import Footer from './common/Footer/Footer';
 
 
 function App() {
   const { productItems } = Data;
+  const { shopItems } = Sdata;
   
   const [cartItem, setCartItem] = useState([]);
   
@@ -38,12 +41,13 @@ function App() {
     <Header cartItem={cartItem}/>
     <Switch>
         <Route path = '/' exact>
-          <Pages productItems={productItems} addToCart={addToCart} />
+          <Pages productItems={productItems} addToCart={addToCart} shopItems={shopItems} />
         </Route>
         <Route path = '/cart' exact>
           <Cart cartItem={cartItem} addToCart={addToCart} decreaseQty={decreaseQty} />
         </Route>
       </Switch>
+      <Footer />
       </Router>
    </>
   )
