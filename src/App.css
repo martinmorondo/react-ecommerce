@@ -13,7 +13,7 @@ body {
 
 .background {
     background-color: #f6f9fc;
-    padding: 50px 0;
+    padding: 10px 0;
 }
 
 .container {
@@ -85,6 +85,18 @@ input, button {
     box-shadow: rgb(43 52 69 / 10%) 0 4px 16px;
 }
 
+.discount {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #e94560;
+  padding: 3px 10px;
+  font-size: 12px;
+  border-radius: 50px;
+  color: #fff;
+  margin: 10px;
+}
+
 /* category  */
 .content-width {
     width: 77%;
@@ -112,12 +124,12 @@ input, button {
     text-transform: capitalize;
   }
 
-  .category .box {
+  .category .box-1 {
     transition: 0.5s;
     padding: 0 20px;
   }
   
-  .category .box:hover {
+  .category .box-1:hover {
     background-color: #ffe1e6;
     cursor: pointer;
   }
@@ -130,10 +142,16 @@ input, button {
     font-weight: bold;
     color: #fff;
     border-radius: 5px;
+    cursor: pointer;
+    transition: .3s;
+  }
+
+  .btn-primary:hover {
+    background: #7d487f;
   }
 
   .top {
-    margin-top: 80px;
+    margin-top: 60px;
   }
 
   .mtop {
@@ -145,18 +163,6 @@ input, button {
     margin: 10px;
   }
 
-  .discount {
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: #e94560;
-    padding: 3px 10px;
-    font-size: 12px;
-    border-radius: 50px;
-    color: #fff;
-    margin: 10px;
-  }
-
   /*---------product-----------*/
   
 .product {
@@ -164,7 +170,7 @@ input, button {
     padding: 20px;
     position: relative;
     border-radius: 8px;
-    box-shadow: rgb(3 0 71 / 9%) 0px 1px 3px;
+    box-shadow: rgba(22, 11, 240, 0.09) 0px 1px 3px;
     margin: 10px;
   }
 
@@ -172,7 +178,7 @@ input, button {
     font-weight: 400;
     font-size: 17px;
   }
-
+  
   .product .rate i {
     font-size: 15px;
     color: #ffcd4e;
@@ -267,3 +273,36 @@ input, button {
     color: white;
     cursor: pointer;
   }
+
+  /*----- heading -------*/
+.heading {
+  margin-top: 100px;
+}
+
+.heading .heading-left i {
+  font-size: 30px;
+}
+
+.heading .heading-left h2 {
+  font-size: 25px;
+  margin: 5px;
+}
+
+.heading .heading-right i,
+.heading .heading-right {
+  text-align: right;
+  color: grey;
+}
+/*----- heading -------*/
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-gap: 30px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 10px;
+}

@@ -1,6 +1,6 @@
 /* -> HEAD <-  */
 .head {
-    background-color: #0f3460;
+    background-color: #4c1a72;
     padding: 10px 0;
     color: #fff;
 }
@@ -32,6 +32,7 @@
 .search-box {
     width: 80%;
     border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50px;
 }
 
 .search-box i {
