@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import './flash.css';
 
 const SampleNextArrow = (props) => {
     const { onClick } = props;
@@ -48,7 +49,7 @@ const FlashCard = ({ productItems, addToCart }) => {
                 {productItems.map((productItems) => {
                     return (
                         <div className='box'>
-                            <div className='product mtop'>
+                            <div className='flash-product product mtop'>
                                 <div className='img'>
                                     <span className='discount'>{productItems.discount}% Off</span>
                                     <img src={productItems.cover} alt='' />

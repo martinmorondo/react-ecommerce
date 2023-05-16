@@ -28,13 +28,7 @@ const NavBar = () => {
                                <Link to = '/pages'>pages</Link> 
                             </li>
                             <li>
-                               <Link to = '/user'>user account</Link> 
-                            </li>
-                            <li>
-                               <Link to = '/vendor'>vendorr account</Link> 
-                            </li>
-                            <li>
-                               <Link to = '/track'>track my order</Link> 
+                               <Link to = '/cart'>track my order</Link> 
                             </li>
                             <li>
                                <Link to = '/contact'>contact</Link> 
