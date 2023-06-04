@@ -11,7 +11,7 @@ const ShopCart = ({ shopItems, addToCart }) => {
     <>
       {shopItems.map((shopItems, index) => {
         return (
-          <div className='box'>
+          <div className='box' key={index}>
             <div className='product m-top'>
               <div className='img'>
                 <span className='discount'>{shopItems.discount}% Off</span>
