@@ -7,12 +7,12 @@ import { Shop } from '../components/shop/Shop';
 import Annocument from '../components/annocuments/Annocument';
 import Wrapper from '../components/wrapper/Wrapper';
 
-const Pages = ({ productItems, cartItem, addToCart, shopItems }) => {
+const Pages = ({ productItems, cartItem, addToCart, shopItems, topItems }) => {
     return (
         <>
             <Home cartItem = {cartItem} />
             <FlashDeals productItems={productItems} addToCart={addToCart} />
-            <TopCate productItems={productItems} addToCart={addToCart} />
+            <TopCate topItems={topItems} addToCart={addToCart} />
             <NewArrivals />
             <Shop shopItems = {shopItems} addToCart={addToCart} />
             <Annocument />
