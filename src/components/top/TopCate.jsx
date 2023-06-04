@@ -2,7 +2,7 @@ import React from 'react';
 import './style.css';
 import { TopCart } from './TopCart';
 
-export const TopCate = () => {
+export const TopCate = ({ addToCart, topItems }) => {
   return (
     <>
         <section className='top-cate background'>
@@ -17,7 +17,7 @@ export const TopCate = () => {
                         <i className='fa-solid fa-caret-right'></i>
                     </div>
                 </div>
-                <TopCart />
+                <TopCart addToCart={addToCart} topItems={topItems} />
             </div>
         </section>
     </>
