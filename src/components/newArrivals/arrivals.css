@@ -32,6 +32,10 @@
     transform: scale(1.1);
 }
 
+.new-arrivals .price button {
+    margin-left: 20px;
+}
+
 
   
   
