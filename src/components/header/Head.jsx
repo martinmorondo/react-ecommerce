@@ -1,29 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './header.css';
+import { Link } from 'react-router-dom';
+
 
 const Head = () => {
+    const [MobileMenu, setMobileMenu] = useState(false);
     return (
         <>
-            <section className='head'>
-                <div className='container d-flex'>
-                    <div className='left row'>
-                        <i className='fa fa-phone'></i>
-                        <label>02494 5893...</label>
-                        <i className='fa fa-envelope'></i>
-                        <label>martinmorondo@gmail.com</label>
-                    </div>
+            <header className='header'>                
+                    <div className='nav-link'>
+                        <ul className={MobileMenu ? 'nav-links-MobileMenu' : 'link f-flex capitalize'} onClick={() => setMobileMenu(false)}>
+                            <li>
+                               <Link to = '/'>home</Link> 
+                            </li>                         
+                            <li>
+                               <Link to = '/cart'>track my order</Link> 
+                            </li>
+                            <li>
+                               <Link to = '/contact'>contact</Link> 
+                            </li>
+                        </ul>
 
-                    <div className='right row RText'>
-                        <label>Theme FAQ's</label>
-                        <label>Need Helps</label>
-                        <span>🏳️‍⚧️</span>
-                        <label htmlFor=''>EN</label>
-                        <span>🏳️‍⚧️</span>
-                        <label htmlFor=''>USD</label>
+                        <button className='toggle' onClick={() => setMobileMenu(!MobileMenu)}>
+                            {
+                                MobileMenu ? 
+                                <i className='fas fa-times close home-btn'></i> :
+                                <i className="fa-solid fa-bars open"></i>
+                            }
+                        </button>
+                        
                     </div>
-                    
-                </div>
-            </section>
+                
+            </header>
         </>
     );
 }

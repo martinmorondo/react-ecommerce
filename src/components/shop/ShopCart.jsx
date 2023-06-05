@@ -1,7 +1,12 @@
 import React, { useState } from "react";
-import Shop from "./Shop";
 
-const ShopCart = ({ shopItems, addToCart }) => {
+const ShopCart = ({ shopItems, addToCart, selectedCategory }) => {
+
+  // Filtrar los productos por categoría seleccionada
+  const filteredItems = selectedCategory
+    ? shopItems.filter((item) => item.category === selectedCategory)
+    : shopItems; 
+    
   const [count, setCount] = useState(0)
   const increment = () => {
     setCount(count + 1)
@@ -9,7 +14,7 @@ const ShopCart = ({ shopItems, addToCart }) => {
 
   return (
     <>
-      {shopItems.map((shopItems, index) => {
+      {filteredItems.map((shopItems, index) => {
         return (
           <div className='box' key={index}>
             <div className='product m-top'>

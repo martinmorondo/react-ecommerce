@@ -1,30 +1,35 @@
-const Catg = () => {
-    const data = [
-      {
-        // cateImg: "https://avatars.mds.yandex.net/i?id=fbfd458f04e933a3158cb2b0cd193942372a798e-9271150-images-thumbs&n=13",
-        cateName: "Phones",
-      },
-      {
-        // cateImg: "https://avatars.mds.yandex.net/i?id=f6f6801e69053762d98eb2fd2741f7e9-5496540-images-thumbs&n=13",
-        cateName: "PlayStation",
-      },
-      {
-        // cateImg: "https://avatars.mds.yandex.net/i?id=fbfd458f04e933a3158cb2b0cd193942372a798e-9271150-images-thumbs&n=13",
-        cateName: "Xbox",
-      },
-      {
-        // cateImg: "https://avatars.mds.yandex.net/i?id=fbfd458f04e933a3158cb2b0cd193942372a798e-9271150-images-thumbs&n=13",
-        cateName: "Watch",
-      },
-      {
-        // cateImg: "https://avatars.mds.yandex.net/i?id=fbfd458f04e933a3158cb2b0cd193942372a798e-9271150-images-thumbs&n=13",
-        cateName: "Glasses",
-      },
-      {
-        // cateImg: "https://avatars.mds.yandex.net/i?id=fbfd458f04e933a3158cb2b0cd193942372a798e-9271150-images-thumbs&n=13",
-        cateName: "Headphones",
-      },
-    ]
+const Catg = ({ setSelectedCategory }) => {
+  const data = [
+    {
+      cateName: "Phones",
+      category: "phone",
+    },
+    {
+      cateName: "PlayStation",
+      category: "playstation",
+    },
+    {
+      cateName: "Xbox",
+      category: "xbox",
+    },
+    {
+      cateName: "Watch",
+      category: "watch",
+    },
+    {
+      cateName: "Glasses",
+      category: "glasses",
+    },
+    {
+      cateName: "Headphones",
+      category: "headphones",
+    },
+  ];
+
+    const handleCategoryClick = (category) => {
+      setSelectedCategory(category);
+    };
+   
     return (
       <>
         <div className='category'>
@@ -34,14 +39,10 @@ const Catg = () => {
           {data.map((value, index) => {
             return (
               <div className='box f-flex' key={index}>
-                <img src={value.cateImg} alt='' />
-                <span>{value.cateName}</span>
+                <button onClick={() => handleCategoryClick(value.category)}>{value.cateName}</button>
               </div>
             )
           })}
-          <div className='box box-2'>
-            <button>View All Brands</button>
-          </div>
         </div>
       </>
     )

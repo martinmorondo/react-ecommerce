@@ -18,26 +18,25 @@ const SlideCard = () => {
     }
     
     return (
-        <>
-            <Slider {...settings}>
-                {Sdata.map((value, index) => {
-                    return (
-                        <>
-                            <div className='box' key = {index}>
-                                <div className='left'>
-                                    <h1>{value.title}</h1>
-                                    <p>{value.desc}</p>
-                                    <button className='btn-primary'>Visit Collections</button>
-                                </div>
-                                <div className='right'>
-                                    <img src = {value.cover} alt = ''/>
-                                </div>
-                            </div>
-                        </>
-                    )
-                })}
-            </Slider>       
-        </>
+        <div className="slider-container">
+        <Slider {...settings}>
+          {Sdata.map((value, index) => {
+            return (
+              <div className="slide-box" key={index}>
+                <div className="slide-content">
+                  <button className="btn-primary">
+                    Visit Collections</button>
+                </div>
+                <div className="slide-image">
+                  <img src={value.cover} alt="" />
+                  <img src={value.cover2} alt="" />
+                </div>
+              </div>
+            );
+          })}
+        </Slider>
+      </div>
+      
     );
 }
 
