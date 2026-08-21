@@ -4,8 +4,8 @@ import SlideCard from './SlideCard';
 const Slider = () => {
     return (
         <>
-            <section className='home-slide'>
-                <div className='container'>
+            <section className='w-full'>
+                <div className='max-w-[90%] mx-auto'>
                     <SlideCard />
                 </div>
             </section>

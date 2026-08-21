@@ -1,16 +1,16 @@
 import React from 'react';
 import FlashCard from './FlashCard';
 
-const FlashDeals = ({ productItems, addToCart }) => {
+const FlashDeals = ({ productItems }) => {
     return (
         <>
-            <section className='flash'>
-                <div className='container'>
-                    <div className='heading f-flex'>
-                        <i className='fa fa-bolt'></i>
-                        <h1>Flash Deals</h1>
+            <section className='bg-background py-10'>
+                <div className='max-w-[90%] mx-auto'>
+                    <div className='flex items-center gap-3 mb-8'>
+                        <i className='fa fa-bolt text-primary text-[30px]'></i>
+                        <h2 className='text-[25px] font-bold'>Flash Deals</h2>
                     </div>
-                    <FlashCard productItems={productItems} addToCart={addToCart} />
+                    <FlashCard productItems={productItems} />
                 </div>
             </section>
         </>

@@ -1,12 +1,11 @@
 import React from 'react';
-import './Home.css';
 import SliderHome from './Slider';
 
 const Home = () => {
     return (
         <>
-            <section className='home'>
-                <div className=''>
+            <section className='w-full mb-5'>
+                <div className='max-w-[90%] mx-auto'>
                     <SliderHome />
                 </div>
             </section>

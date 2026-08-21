@@ -1,23 +1,27 @@
 import React from "react";
 
 const Annocument = () => {
-  const mystyle = {
-    width: "30%",
-    height: "340px",
-  }
-  const mystyle1 = {
-    width: "68%",
-    height: "340px",
-  }
   return (
     <>
-      <section className='annocument background'>
-        <div className='container d-flex'>
-          <div className='img' style={mystyle}>
-            <img src='https://avatars.mds.yandex.net/i?id=b0deb534f31bda1c185cf02119f971d594e6dd20-9030085-images-thumbs&n=13' width='100%' height='100%' />
+      <section className='bg-background py-16'>
+        <div className='max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between gap-6'>
+          
+          {/* Banner Izquierdo */}
+          <div className='w-full md:w-[30%] h-[300px] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300'>
+            <img 
+              src='/img/products/banner-1.jpg' 
+              alt='banner promocional'
+              className='w-full h-full object-cover hover:scale-105 transition-transform duration-500' 
+            />
           </div>
-          <div className='img' style={mystyle1}>
-            <img src='https://inditeweb.com/wp-content/uploads/2020/04/ecommerce-website-development-ghana.jpg' width='100%' height='100%' />
+          
+          {/* Banner Derecho */}
+          <div className='w-full md:w-[70%] h-[300px] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300'>
+            <img 
+              src='/img/products/banner-2.jpg' 
+              alt='banner promocional 2'
+              className='w-full h-full object-cover hover:scale-105 transition-transform duration-500' 
+            />
           </div>
         </div>
       </section>
@@ -25,4 +29,4 @@ const Annocument = () => {
   )
 }
 
-export default Annocument
+export default Annocument;
