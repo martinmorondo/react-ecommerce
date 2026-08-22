@@ -1,3 +1,5 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css');
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 @import "tailwindcss";
@@ -6,11 +8,299 @@
   --color-primary: #e94560;
   --color-secondary: #0f3460;
   --color-background: #f6f9fc;
+
+  --font-sans: 'Poppins', sans-serif;
+}
+
+/* =========================================================
+   RESET / BASE
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-    background-color: #ffffff;
-    font-family: 'Poppins', sans-serif;
-    /* Evita que el scroll horizontal rompa la página en celulares */
-    overflow-x: hidden; 
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+
+  background-color: #ffffff;
+  color: #1f2937;
+
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================================
+   ROOT
+   ========================================================= */
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* =========================================================
+   TIPOGRAFÍA
+   ========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* =========================================================
+   ENLACES
+   ========================================================= */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* =========================================================
+   IMÁGENES / MEDIA
+   ========================================================= */
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+/* Evita pequeños problemas visuales al cargar imágenes */
+img:not([src]),
+img[src=''] {
+  visibility: hidden;
+}
+
+/* =========================================================
+   BOTONES / FORMULARIOS
+   ========================================================= */
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+button:not(:disabled),
+select:not(:disabled),
+input:not(:disabled),
+textarea:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   FOCUS / ACCESIBILIDAD
+   ========================================================= */
+
+.search-input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* =========================================================
+   SELECCIÓN DE TEXTO
+   ========================================================= */
+
+::selection {
+  background-color: rgba(233, 69, 96, 0.18);
+  color: #0f3460;
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #d9dee7 transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d9dee7;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b9c0cb;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 640px) {
+  html {
+    scroll-padding-top: 75px;
+  }
+
+  body {
+    font-size: 15px;
+  }
+}
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =========================================================
+   UTILIDADES GLOBALES
+   ========================================================= */
+
+/* Evita que elementos largos rompan el layout */
+button,
+a,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* Mejora la apariencia de campos en iOS */
+input,
+textarea,
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+/* Quita el comportamiento azul de tap en algunos móviles */
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================================================
+   SLICK CAROUSEL
+   ========================================================= */
+
+/* Evita pequeños desplazamientos horizontales del carrusel */
+.slick-slider {
+  min-width: 0;
+}
+
+.slick-list {
+  overflow: hidden;
+}
+
+.slick-track {
+  display: flex;
+}
+
+.slick-slide {
+  height: auto;
+}
+
+.slick-slide > div {
+  height: 100%;
+}
+
+/* Evita que el estilo de Slick agregue márgenes extra */
+.slick-dots {
+  bottom: -25px;
+}
+
+.slick-dots li button::before {
+  font-size: 7px;
+  color: #0f3460;
+  opacity: 0.25;
+}
+
+.slick-dots li.slick-active button::before {
+  color: #e94560;
+  opacity: 1;
+}
+
+/* =========================================================
+   ESTADOS DE CARGA / IMÁGENES
+   ========================================================= */
+
+img[loading='lazy'] {
+  content-visibility: auto;
 }
