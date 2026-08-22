@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #e94560;
+  --color-secondary: #0f3460;
+  --color-background: #f6f9fc;
+}
+
+body {
+    background-color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    /* Evita que el scroll horizontal rompa la página en celulares */
+    overflow-x: hidden; 
+}

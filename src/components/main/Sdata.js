@@ -1,23 +1,25 @@
 export const Sdata = [
     {
         id: 1,
-        title: 'Discounts of up to 50% on your first purchase!',
-        desc: 'Experience the ultimate comfort and style with our exclusive footwear collection. Limited time offer.',
-        cover: 'zapas-puma-inicio.jpg',
-        cover2: '/img/products/zapatillas-nike-inicio.jpg',
+        badge: "Nueva Colección",
+        title: "Tecnología sin límites",
+        desc: "Potenciá tu productividad con el ecosistema de última generación. Diseño, rendimiento y vanguardia en tus manos.",
+        cover: "/img/products/", 
     },
     {
         id: 2,
-        title: 'Unmissable discounts on iPhone cell phones',
-        desc: 'Upgrade your tech game with the latest smartphones. Capture every moment in stunning detail with pro-level cameras.',
-        cover: 'iphone-inicio.webp',
-        cover2: '/img/products/iphones-inicio.jpg',
+        badge: "Oferta Exclusiva",
+        title: "Pisá con estilo",
+        desc: "Descubrí la nueva línea de zapatillas urbanas. Confort absoluto diseñado para acompañar tu ritmo de vida.",
+        cover: "/img/products/nike-air.png",
     },
     {
         id: 3,
-        title: 'Discounts on sneakers to step in style',
-        desc: 'Step into the new season with top-tier brands and unparalleled design. Your feet deserve the best.',
-        cover: '/img/products/sneaker-jordan.jpg',
+        badge: "Premium Lifestyle",
+        title: "El tiempo es tuyo",
+        desc: "Relojes de lujo que marcan la diferencia. Precisión suiza y materiales de primera calidad para destacar siempre.",
+        cover: "/img/products/hero-watch.jpg",
     },
-]
+];
+
 export default Sdata;
