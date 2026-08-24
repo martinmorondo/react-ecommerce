@@ -1,15 +1,17 @@
 {
-  "name": "vite-react-starter",
+  "name": "nexora-ecommerce",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\"",
-    "prepare": "husky install"
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\""
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.3.0",
@@ -24,6 +26,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
+    "@types/react-slick": "^0.23.13",
     "@typescript-eslint/eslint-plugin": "^8.67.0",
     "@typescript-eslint/parser": "^8.67.0",
     "@vitejs/plugin-react": "^6.0.5",
@@ -32,18 +35,10 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.4",
-    "husky": "^9.1.7",
-    "lint-staged": "^17.3.0",
     "postcss": "^8.5.26",
     "prettier": "^3.9.6",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "vite": "^8.2.1"
-  },
-  "lint-staged": {
-    "src/**/*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ]
   }
 }

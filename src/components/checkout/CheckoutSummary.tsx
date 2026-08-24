@@ -219,13 +219,13 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
             text-xs font-medium
             text-primary
           ">
-            <span className="
+           <span className="
               h-3.5 w-3.5
               animate-spin
               rounded-full
               border-2
               border-primary/20
-              border-t-primary
+              border-t-primary"
             />
             Procesando pedido...
           </div>

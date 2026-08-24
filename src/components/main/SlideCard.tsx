@@ -7,7 +7,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import { Link } from 'react-router-dom';
 import { Sdata, SlideData } from './Sdata';
 
-const Slider = ReactSlick.default || ReactSlick;
 
 /* =========================================================
    FLECHAS
@@ -197,7 +196,7 @@ const SlideCard = () => {
         aria-hidden="true"
       />
 
-      <Slider {...settings}>
+      <ReactSlick {...settings}>
         {Sdata.map((slide: SlideData, index) => (
           <article
             key={slide.id}
@@ -227,28 +226,14 @@ const SlideCard = () => {
               <img
                 src={slide.cover}
                 alt={slide.alt}
-                fetchPriority={
-                  slide.id === 1 ? 'high' : undefined
-                }
-                loading={
-                  slide.id === 1
-                    ? 'eager'
-                    : 'lazy'
-                }
+                loading={slide.id === 1 ? 'eager' : 'lazy'}
                 className="
                   absolute inset-0
                   h-full w-full
                   object-cover object-center
-                  opacity-[0.94]
-
-                  transition-transform
-                  duration-[8s]
-                  ease-out
-
-                  group-hover:scale-[1.035]
-
-                  motion-reduce:transition-none
-                  motion-reduce:group-hover:scale-100
+                  opacity-90
+                  transition-transform duration-[9s] ease-out
+                  group-hover:scale-105
                 "
               />
 
@@ -610,7 +595,7 @@ const SlideCard = () => {
             </div>
           </article>
         ))}
-      </Slider>
+      </ReactSlick>
     </section>
   );
 };

@@ -10,7 +10,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import { useCartStore } from '../../store/cartStore';
 import { Product } from '../../types';
 
-const Slider = ReactSlick.default || ReactSlick;
 
 /* =========================================================
    HELPERS
@@ -689,14 +688,14 @@ const FlashCard = ({
         sm:px-4
       "
     >
-      <Slider {...settings}>
+      <ReactSlick {...settings}>
         {productItems.map((productItem) => (
           <FlashProductCard
             key={productItem.id}
             productItem={productItem}
           />
         ))}
-      </Slider>
+      </ReactSlick>
     </div>
   );
 };

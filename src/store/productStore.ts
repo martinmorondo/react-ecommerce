@@ -1,13 +1,19 @@
 import { create } from 'zustand';
+
 import Data from '../components/Data';
 import Sdata from '../components/shop/Sdata';
-import Tdata, { TopItem } from '../components/top/Tdata';
+import Tdata from '../components/top/Tdata';
+
+import type { TopItem } from '../components/top/Tdata';
+import type { ShopItem } from '../components/shop/Sdata';
+
 import Ndata from '../components/newArrivals/Ndata';
-import { Product } from '../types';
+
+import type { Product } from '../types';
 
 interface CatalogProducts {
   flashDeals: Product[];
-  shopItems: Product[];
+  shopItems: ShopItem[];
   topCategories: TopItem[];
   newArrivals: Product[];
 }
