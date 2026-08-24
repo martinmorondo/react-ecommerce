@@ -7,6 +7,7 @@ import { Shop } from '../components/shop/Shop';
 import Announcement from '../components/announcements/Announcement';
 import Wrapper from '../components/wrapper/Wrapper';
 import { useProductStore } from '../store/productStore';
+import PromoBanner from '../components/promo/PromoBanner';
 
 const Pages = () => {
   const products = useProductStore((state) => state.products);
@@ -149,6 +150,8 @@ const Pages = () => {
       <NewArrivals
         arrivalsItems={products.newArrivals}
       />
+
+      <PromoBanner />
 
       <Shop
         shopItems={products.shopItems}

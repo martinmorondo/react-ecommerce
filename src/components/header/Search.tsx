@@ -8,18 +8,13 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router-dom';
-import { useCartStore } from '../../store/cartStore';
-import logo from '../../assets/img/phone-logo.png';
 
-const categories = [
-  { label: 'Todas', value: 'all' },
-  { label: 'Phones', value: 'phone' },
-  { label: 'PlayStation', value: 'playstation' },
-  { label: 'Xbox', value: 'xbox' },
-  { label: 'Watch', value: 'watch' },
-  { label: 'Glasses', value: 'glasses' },
-  { label: 'Headphones', value: 'headphones' },
-] as const;
+import { useCartStore } from '../../store/cartStore';
+import { siteConfig } from '../../config/site';
+import {
+  ALL_CATEGORY_VALUE,
+  categories,
+} from '../../config/categories';
 
 const Search = () => {
   const getTotalItems = useCartStore(
@@ -29,9 +24,26 @@ const Search = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const urlSearchQuery = searchParams.get('search') ?? '';
-  const urlCategory =
-    searchParams.get('category') ?? 'all';
+  const urlSearchQuery =
+    searchParams.get('search') ?? '';
+
+  const rawCategory =
+    searchParams.get('category') ??
+    ALL_CATEGORY_VALUE;
+
+  /*
+   * Nos aseguramos de que la categoría de la URL
+   * exista realmente en nuestra configuración central.
+   */
+  const isValidCategory =
+    rawCategory === ALL_CATEGORY_VALUE ||
+    categories.some(
+      (category) => category.value === rawCategory
+    );
+
+  const urlCategory = isValidCategory
+    ? rawCategory
+    : ALL_CATEGORY_VALUE;
 
   const [searchValue, setSearchValue] =
     useState(urlSearchQuery);
@@ -44,21 +56,24 @@ const Search = () => {
 
   const totalCartItems = getTotalItems();
 
-  /*
-   * Mantiene el input sincronizado con la URL.
-   * Esto permite que /shop?search=iphone
-   * también muestre "iphone" en el buscador.
-   */
+  /* =====================================================
+     SYNC URL → INPUT
+     ===================================================== */
+
   useEffect(() => {
     setSearchValue(urlSearchQuery);
   }, [urlSearchQuery]);
 
-  /*
-   * Atajos de teclado globales.
-   */
+  /* =====================================================
+     KEYBOARD SHORTCUTS
+     ===================================================== */
+
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
+    const handleKeyDown = (
+      event: KeyboardEvent
+    ) => {
+      const target =
+        event.target as HTMLElement | null;
 
       const isTyping =
         target?.tagName === 'INPUT' ||
@@ -66,13 +81,18 @@ const Search = () => {
         target?.tagName === 'SELECT' ||
         target?.isContentEditable;
 
-      if (event.key === '/' && !isTyping) {
+      if (
+        event.key === '/' &&
+        !isTyping
+      ) {
         event.preventDefault();
+
         searchInputRef.current?.focus();
       }
 
       if (event.key === 'Escape') {
         searchInputRef.current?.blur();
+
         setIsSearchFocused(false);
       }
     };
@@ -90,6 +110,10 @@ const Search = () => {
     };
   }, []);
 
+  /* =====================================================
+     SUBMIT SEARCH
+     ===================================================== */
+
   const handleSubmit = (
     event: FormEvent<HTMLFormElement>
   ) => {
@@ -98,13 +122,18 @@ const Search = () => {
     const query = searchValue.trim();
 
     /*
-     * Si no hay búsqueda ni categoría,
-     * volvemos simplemente a la tienda.
+     * Sin búsqueda ni categoría:
+     * volvemos simplemente al catálogo.
      */
-    if (!query && urlCategory === 'all') {
+    if (
+      !query &&
+      urlCategory === ALL_CATEGORY_VALUE
+    ) {
       navigate('/shop');
+
       searchInputRef.current?.blur();
       setIsSearchFocused(false);
+
       return;
     }
 
@@ -114,8 +143,13 @@ const Search = () => {
       params.set('search', query);
     }
 
-    if (urlCategory !== 'all') {
-      params.set('category', urlCategory);
+    if (
+      urlCategory !== ALL_CATEGORY_VALUE
+    ) {
+      params.set(
+        'category',
+        urlCategory
+      );
     }
 
     const queryString = params.toString();
@@ -130,6 +164,10 @@ const Search = () => {
     setIsSearchFocused(false);
   };
 
+  /* =====================================================
+     CATEGORY CHANGE
+     ===================================================== */
+
   const handleCategoryChange = (
     event: ChangeEvent<HTMLSelectElement>
   ) => {
@@ -139,12 +177,21 @@ const Search = () => {
 
     const query = searchValue.trim();
 
+    /*
+     * Conservamos la búsqueda mientras
+     * cambiamos de categoría.
+     */
     if (query) {
       params.set('search', query);
     }
 
-    if (category !== 'all') {
-      params.set('category', category);
+    if (
+      category !== ALL_CATEGORY_VALUE
+    ) {
+      params.set(
+        'category',
+        category
+      );
     }
 
     const queryString = params.toString();
@@ -156,8 +203,13 @@ const Search = () => {
     );
   };
 
+  /* =====================================================
+     CLEAR SEARCH
+     ===================================================== */
+
   const clearSearch = () => {
     setSearchValue('');
+
     searchInputRef.current?.focus();
   };
 
@@ -169,68 +221,122 @@ const Search = () => {
         w-full
         border-b border-black/[0.06]
         bg-white
-        py-4
-        sm:py-5
       "
     >
+      {/* Bottom accent */}
       <div
         className="
+          absolute
+          inset-x-0
+          bottom-0
+          h-px
+          bg-gradient-to-r
+          from-transparent
+          via-primary/15
+          to-transparent
+        "
+        aria-hidden="true"
+      />
+
+      <div
+        className="
+          relative
           mx-auto
-          flex max-w-7xl items-center gap-3
-          px-4
-          sm:gap-4 sm:px-6
-          lg:gap-6 lg:px-8
+          flex max-w-7xl
+          items-center
+          gap-3
+          px-4 py-3.5
+
+          sm:gap-4
+          sm:px-6
+          sm:py-4
+
+          lg:gap-6
+          lg:px-8
         "
       >
-        {/* Logo */}
+        {/* ===================================================
+            LOGO
+            =================================================== */}
+
         <Link
           to="/"
-          aria-label="Store - Inicio"
+          aria-label={`${siteConfig.name} - Inicio`}
           className="
             group
-            flex shrink-0 items-center gap-2.5
-            rounded-lg
+            shrink-0
+            rounded-2xl
             focus:outline-none
             focus-visible:ring-2
             focus-visible:ring-primary/40
+            focus-visible:ring-offset-2
           "
         >
           <span
             className="
-              flex h-11 w-11
-              items-center justify-center
-              rounded-xl
+              flex
+              items-center
+              gap-2.5
+              rounded-2xl
+              border
+              border-black/[0.05]
               bg-background
-              transition-all duration-300
-              group-hover:bg-primary/10
+              px-2.5 py-2
+              shadow-[0_4px_16px_rgba(3,0,71,0.04)]
+              transition-all
+              duration-300
+
+              group-hover:border-primary/15
+              group-hover:bg-primary/[0.04]
+              group-hover:shadow-[0_8px_22px_rgba(3,0,71,0.07)]
             "
           >
-            <img
-              src={logo}
-              alt="Store"
+            <span
               className="
-                h-8 w-8
-                object-contain
-                transition-transform duration-300
+                flex
+                h-9 w-9
+                items-center
+                justify-center
+                rounded-xl
+                bg-white
+                shadow-sm
+                transition-transform
+                duration-300
                 group-hover:scale-105
               "
-            />
-          </span>
+            >
+              <img
+                src="/img/logo/phone-logo.png"
+                alt={siteConfig.name}
+                className="
+                  h-7 w-7
+                  object-contain
+                "
+              />
+            </span>
 
-          <span
-            className="
-              hidden
-              text-2xl font-black
-              tracking-[-0.04em]
-              text-secondary
-              md:block
-            "
-          >
-            Store<span className="text-primary">.</span>
+            <span
+              className="
+                hidden
+                text-xl
+                font-black
+                tracking-[-0.045em]
+                text-secondary
+                md:block
+              "
+            >
+              {siteConfig.name}
+              <span className="text-primary">
+                .
+              </span>
+            </span>
           </span>
         </Link>
 
-        {/* Search */}
+        {/* ===================================================
+            SEARCH
+            =================================================== */}
+
         <form
           onSubmit={handleSubmit}
           className="min-w-0 flex-1"
@@ -238,27 +344,50 @@ const Search = () => {
         >
           <div
             className={`
-              flex h-12 items-center
+              group/search
+              flex
+              min-h-12
+              items-center
               overflow-hidden
               rounded-2xl
               border
               bg-background
-              transition-all duration-300
+              transition-all
+              duration-300
 
               ${
                 isSearchFocused
-                  ? 'border-primary/50 bg-white shadow-[0_0_0_4px_rgba(233,69,96,0.08)]'
-                  : 'border-black/10'
+                  ? `
+                    border-primary/40
+                    bg-white
+                    shadow-[0_0_0_4px_rgba(233,69,96,0.07),0_8px_25px_rgba(3,0,71,0.06)]
+                  `
+                  : `
+                    border-black/[0.07]
+                    shadow-[0_3px_14px_rgba(3,0,71,0.025)]
+                    hover:border-black/10
+                    hover:bg-white
+                  `
               }
             `}
           >
             {/* Search icon */}
             <span
-              className="
-                flex h-full shrink-0
-                items-center pl-4
-                text-gray-400
-              "
+              className={`
+                flex
+                h-full
+                shrink-0
+                items-center
+                pl-4
+                transition-colors
+                duration-300
+
+                ${
+                  isSearchFocused
+                    ? 'text-primary'
+                    : 'text-gray-400 group-hover/search:text-gray-500'
+                }
+              `}
               aria-hidden="true"
             >
               <i className="fa-solid fa-magnifying-glass text-sm" />
@@ -270,7 +399,9 @@ const Search = () => {
               type="search"
               value={searchValue}
               onChange={(event) =>
-                setSearchValue(event.target.value)
+                setSearchValue(
+                  event.target.value
+                )
               }
               onFocus={() =>
                 setIsSearchFocused(true)
@@ -284,17 +415,17 @@ const Search = () => {
               aria-label="Buscar productos"
               className="
                 search-input
-                h-full min-w-0 flex-1
+                h-12
+                min-w-0
+                flex-1
                 border-0
                 bg-transparent
                 px-3
-                text-sm text-secondary
+                text-sm
+                font-medium
+                text-secondary
                 outline-none
-                ring-0
                 placeholder:text-gray-400
-                focus:border-0
-                focus:outline-none
-                focus:ring-0
                 sm:text-[15px]
               "
             />
@@ -310,13 +441,19 @@ const Search = () => {
                 aria-label="Limpiar búsqueda"
                 className="
                   mr-1
-                  flex h-9 w-9 shrink-0
-                  items-center justify-center
+                  flex
+                  h-9 w-9
+                  shrink-0
+                  items-center
+                  justify-center
                   rounded-xl
                   text-gray-400
-                  transition-all duration-200
+                  transition-all
+                  duration-200
+
                   hover:bg-gray-100
                   hover:text-secondary
+
                   focus:outline-none
                   focus-visible:ring-2
                   focus-visible:ring-primary/30
@@ -333,23 +470,40 @@ const Search = () => {
             {!searchValue && (
               <span
                 className="
-                  mr-2 hidden
-                  rounded-md
-                  border border-black/10
+                  mr-2
+                  hidden
+                  items-center
+                  gap-1
+                  rounded-lg
+                  border
+                  border-black/[0.07]
                   bg-white
                   px-2 py-1
-                  text-[9px] font-semibold
+                  text-[9px]
+                  font-bold
                   text-gray-400
+                  shadow-sm
                   sm:inline-flex
                 "
                 aria-hidden="true"
               >
-                /
+                <span>Presioná</span>
+
+                <kbd className="font-black text-secondary">
+                  /
+                </kbd>
               </span>
             )}
 
             {/* Category */}
-            <div className="hidden h-full lg:flex">
+            <div
+              className="
+                hidden
+                h-full
+                items-center
+                lg:flex
+              "
+            >
               <label
                 htmlFor="search-category"
                 className="sr-only"
@@ -357,31 +511,53 @@ const Search = () => {
                 Seleccionar categoría
               </label>
 
-              <select
-                id="search-category"
-                value={urlCategory}
-                onChange={handleCategoryChange}
+              <div
                 className="
-                  h-full
-                  border-l border-black/10
-                  bg-white
-                  px-4
-                  text-xs font-semibold
-                  text-secondary
-                  outline-none
-                  focus:outline-none
-                  focus:ring-0
+                  flex
+                  h-8
+                  items-center
+                  border-l
+                  border-black/[0.07]
+                  pl-3
                 "
               >
-                {categories.map((category) => (
+                <select
+                  id="search-category"
+                  value={urlCategory}
+                  onChange={handleCategoryChange}
+                  className="
+                    h-full
+                    cursor-pointer
+                    border-0
+                    bg-transparent
+                    px-3
+                    text-xs
+                    font-bold
+                    text-secondary
+                    outline-none
+                    focus:outline-none
+                  "
+                >
                   <option
-                    key={category.value}
-                    value={category.value}
+                    value={
+                      ALL_CATEGORY_VALUE
+                    }
                   >
-                    {category.label}
+                    Todas
                   </option>
-                ))}
-              </select>
+
+                  {categories.map(
+                    (category) => (
+                      <option
+                        key={category.value}
+                        value={category.value}
+                      >
+                        {category.label}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
             </div>
 
             {/* Search button */}
@@ -390,19 +566,25 @@ const Search = () => {
               aria-label="Buscar productos"
               className="
                 mr-1
-                flex h-10 w-10 shrink-0
-                items-center justify-center
+                flex
+                h-10 w-10
+                shrink-0
+                items-center
+                justify-center
                 rounded-xl
                 bg-primary
                 text-white
-                shadow-md
-                shadow-primary/20
-                transition-all duration-300
+                shadow-[0_6px_16px_rgba(233,69,96,0.22)]
+                transition-all
+                duration-300
+
                 hover:-translate-y-0.5
-                hover:bg-[#d93652]
-                hover:shadow-primary/30
+                hover:bg-primary-dark
+                hover:shadow-[0_9px_20px_rgba(233,69,96,0.28)]
+
                 active:translate-y-0
                 active:scale-95
+
                 focus:outline-none
                 focus-visible:ring-2
                 focus-visible:ring-primary/40
@@ -417,24 +599,34 @@ const Search = () => {
           </div>
         </form>
 
-        {/* Actions */}
+        {/* ===================================================
+            ACTIONS
+            =================================================== */}
+
         <div
           className="
-            flex shrink-0
+            flex
+            shrink-0
             items-center
             gap-2
             sm:gap-3
           "
         >
-          {/* Usuario */}
+          {/* User */}
           <div
             className="
-              hidden h-11 w-11
-              items-center justify-center
-              rounded-xl
-              border border-black/[0.06]
+              hidden
+              h-11 w-11
+              items-center
+              justify-center
+              rounded-2xl
+              border
+              border-black/[0.06]
               bg-background
               text-secondary
+              shadow-sm
+              transition-all
+              duration-300
               md:flex
             "
             aria-label="Perfil de usuario"
@@ -445,7 +637,7 @@ const Search = () => {
             />
           </div>
 
-          {/* Carrito */}
+          {/* Cart */}
           <Link
             to="/cart"
             aria-label={`Ir al carrito. ${totalCartItems} ${
@@ -454,8 +646,9 @@ const Search = () => {
                 : 'productos'
             }`}
             className="
-              group relative
-              rounded-xl
+              group
+              relative
+              rounded-2xl
               focus:outline-none
               focus-visible:ring-2
               focus-visible:ring-primary/40
@@ -464,16 +657,23 @@ const Search = () => {
           >
             <span
               className="
-                flex h-11 w-11
-                items-center justify-center
-                rounded-xl
-                border border-black/[0.06]
+                flex
+                h-11 w-11
+                items-center
+                justify-center
+                rounded-2xl
+                border
+                border-black/[0.06]
                 bg-background
                 text-secondary
-                transition-all duration-300
+                shadow-sm
+                transition-all
+                duration-300
+
                 group-hover:border-primary/20
-                group-hover:bg-primary/10
+                group-hover:bg-primary/[0.06]
                 group-hover:text-primary
+                group-hover:shadow-[0_8px_20px_rgba(3,0,71,0.07)]
               "
             >
               <i
@@ -485,17 +685,25 @@ const Search = () => {
             {totalCartItems > 0 && (
               <span
                 className="
-                  absolute -right-1.5 -top-1.5
-                  flex h-5 min-w-5
-                  items-center justify-center
+                  absolute
+                  -right-1.5
+                  -top-1.5
+                  flex
+                  h-5 min-w-5
+                  items-center
+                  justify-center
                   rounded-full
                   bg-primary
                   px-1.5
-                  text-[10px] font-bold
+                  text-[10px]
+                  font-extrabold
                   text-white
-                  shadow-md
-                  shadow-primary/20
+                  shadow-[0_4px_10px_rgba(233,69,96,0.25)]
                   ring-2 ring-white
+                  transition-transform
+                  duration-200
+
+                  group-hover:scale-110
                 "
                 aria-hidden="true"
               >

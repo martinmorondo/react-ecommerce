@@ -27,7 +27,7 @@ export const Sdata: SlideData[] = [
     badge: 'Nueva colección',
     title: 'Tecnología que lleva tu día más lejos',
     desc: 'Descubrí productos pensados para combinar rendimiento, diseño y tecnología en una experiencia única.',
-    cover: '/img/products/iphone-inicio.webp',
+    cover: '/img/products/iphone-banner.webp',
     alt: 'Productos tecnológicos de última generación',
     primaryAction: {
       label: 'Explorar colección',
@@ -44,7 +44,7 @@ export const Sdata: SlideData[] = [
     badge: 'Oferta exclusiva',
     title: 'Tu estilo. Tu ritmo. Tus zapatillas.',
     desc: 'Encontrá modelos urbanos que combinan comodidad, diseño y personalidad para acompañarte todos los días.',
-    cover: '/img/products/nike-air.png',
+    cover: '/img/products/zapas-nike-inicio.jpg',
     alt: 'Zapatillas Nike Air urbanas',
     primaryAction: {
       label: 'Comprar ahora',
@@ -61,7 +61,7 @@ export const Sdata: SlideData[] = [
     badge: 'Colección premium',
     title: 'El tiempo también define tu estilo',
     desc: 'Descubrí relojes seleccionados para quienes buscan precisión, elegancia y materiales de primera calidad.',
-    cover: '/img/products/apple-watch.webp',
+    cover: '/img/products/banner-smart-watch.jpg',
     alt: 'Reloj premium de lujo',
     primaryAction: {
       label: 'Descubrir colección',

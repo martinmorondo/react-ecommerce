@@ -1,3 +1,5 @@
+import Sdata from '../shop/Sdata';
+
 export interface TopItem {
   id: number;
   cover: string;
@@ -6,44 +8,46 @@ export interface TopItem {
   price: number;
 }
 
-export const Tdata: { topItems: TopItem[] } = {
-  topItems: [
-    {
-      id: 1,
-      cover: '/img/products/headphone.jpg',
-      para: 'headphone',
-      desc: '3k orders this week',
-      price: 180,
-    },
-    {
-      id: 2,
-      cover: '/img/products/apple-watch.webp',
-      para: 'watch',
-      desc: '4k orders this week',
-      price: 180,
-    },
-    {
-      id: 3,
-      cover: '/img/products/sunglasses-1.webp',
-      para: 'sunglass',
-      desc: '6k orders this week',
-      price: 180,
-    },
-    {
-      id: 4,
-      cover: '/img/products/headphone-wireless.jpg',
-      para: 'headphone',
-      desc: '4k orders this week',
-      price: 180,
-    },
-    {
-      id: 5,
-      cover: '/img/products/sunglasses-2.jpg',
-      para: 'sunglass',
-      desc: '6k orders this week',
-      price: 180,
-    },
-  ],
+const TOP_PRODUCT_IDS = [
+  'shop-12',
+  'shop-7',
+  'shop-2',
+  'shop-17',
+  'shop-26',
+] as const;
+
+const TOP_DESCRIPTIONS = [
+  'Favorito de la semana',
+  'Destacado en gaming',
+  'Uno de los más buscados',
+  'Tendencia en wearables',
+  'Ideal para tu hogar',
+] as const;
+
+const topItems: TopItem[] = TOP_PRODUCT_IDS.flatMap(
+  (productId, index) => {
+    const product = Sdata.shopItems.find(
+      (item) => item.id === productId
+    );
+
+    if (!product) {
+      return [];
+    }
+
+    return [
+      {
+        id: index + 1,
+        cover: product.cover,
+        para: product.name,
+        desc: TOP_DESCRIPTIONS[index],
+        price: product.price,
+      },
+    ];
+  }
+);
+
+export const Tdata = {
+  topItems,
 };
 
 export default Tdata;

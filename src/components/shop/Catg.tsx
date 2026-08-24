@@ -1,50 +1,23 @@
+import {
+  ALL_CATEGORY_VALUE,
+  categories,
+} from '../../config/categories';
+import type { CategoryId } from '../../config/categories';
+
 interface CatgProps {
-  selectedCategory: string | null;
-  setSelectedCategory: (category: string | null) => void;
+  selectedCategory: CategoryId | null;
+  setSelectedCategory: (
+    category: CategoryId | null
+  ) => void;
 }
 
-interface CategoryOption {
-  label: string;
-  value: string | null;
-  icon: string;
-}
-
-const categories: CategoryOption[] = [
+const categoryOptions = [
   {
+    value: ALL_CATEGORY_VALUE,
     label: 'Todos los productos',
-    value: null,
     icon: 'fa-border-all',
   },
-  {
-    label: 'Phones',
-    value: 'phone',
-    icon: 'fa-mobile-screen-button',
-  },
-  {
-    label: 'PlayStation',
-    value: 'playstation',
-    icon: 'fa-gamepad',
-  },
-  {
-    label: 'Xbox',
-    value: 'xbox',
-    icon: 'fa-gamepad',
-  },
-  {
-    label: 'Watch',
-    value: 'watch',
-    icon: 'fa-clock',
-  },
-  {
-    label: 'Glasses',
-    value: 'glasses',
-    icon: 'fa-glasses',
-  },
-  {
-    label: 'Headphones',
-    value: 'headphones',
-    icon: 'fa-headphones',
-  },
+  ...categories,
 ];
 
 const Catg = ({
@@ -96,18 +69,30 @@ const Catg = ({
         role="group"
         aria-label="Categorías disponibles"
       >
-        {categories.map((item) => {
-          const isActive =
-            selectedCategory === item.value;
+        {categoryOptions.map((item) => {
+          const isAll =
+            item.value === ALL_CATEGORY_VALUE;
+
+          const isActive = isAll
+            ? selectedCategory === null
+            : selectedCategory === item.value;
 
           return (
             <button
-              key={item.value ?? 'all'}
+              key={item.value}
               type="button"
-              onClick={() => setSelectedCategory(item.value)}
+              onClick={() =>
+                setSelectedCategory(
+                  isAll
+                    ? null
+                    : item.value
+                )
+              }
               aria-pressed={isActive}
               className={`
-                group flex w-full items-center gap-3
+                group
+                flex w-full
+                items-center gap-3
                 rounded-xl
                 px-3 py-3
                 text-left
@@ -135,7 +120,8 @@ const Catg = ({
               {/* Icon */}
               <span
                 className={`
-                  flex h-9 w-9 shrink-0
+                  flex h-9 w-9
+                  shrink-0
                   items-center justify-center
                   rounded-lg
                   transition-all duration-200
@@ -166,7 +152,8 @@ const Catg = ({
               {/* Indicator */}
               <span
                 className={`
-                  flex h-6 w-6 shrink-0
+                  flex h-6 w-6
+                  shrink-0
                   items-center justify-center
                   rounded-full
                   transition-all duration-200

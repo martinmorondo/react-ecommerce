@@ -1,54 +1,29 @@
-import { Product } from '../types';
+import type { Product } from '../types';
+import Sdata from './shop/Sdata';
 
-interface DataStructure {
+const FLASH_DEAL_IDS = [
+  'shop-2',
+  'shop-7',
+  'shop-12',
+  'shop-17',
+  'shop-22',
+  'shop-26',
+] as const;
+
+const productItems: Product[] = FLASH_DEAL_IDS.flatMap(
+  (productId) => {
+    const product = Sdata.shopItems.find(
+      (item) => item.id === productId
+    );
+
+    return product ? [product] : [];
+  }
+);
+
+const Data: {
   productItems: Product[];
-}
-
-const Data: DataStructure = {
-  productItems: [
-    {
-      id: 'flash-1',
-      discount: 50,
-      cover: '/img/products/nike-air.png',
-      name: 'Shoes',
-      price: 100,
-    },
-    {
-      id: 'flash-2',
-      discount: 40,
-      cover: '/img/products/watch.png',
-      name: 'Watch',
-      price: 20,
-    },
-    {
-      id: 'flash-3',
-      discount: 40,
-      cover: '/img/products/tv-smart.png',
-      name: 'Smart TV',
-      price: 200,
-    },
-    {
-      id: 'flash-4',
-      discount: 40,
-      cover: '/img/products/nike-air.png',
-      name: 'Tshirt Nike',
-      price: 50,
-    },
-    {
-      id: 'flash-5',
-      discount: 50,
-      cover: '/img/products/jordan-shoes.webp',
-      name: 'Jordan Shoes',
-      price: 140,
-    },
-    {
-      id: 'flash-6',
-      discount: 50,
-      cover: '/img/products/puma-shoes.jpg',
-      name: 'Puma Shoes',
-      price: 100,
-    },
-  ],
+} = {
+  productItems,
 };
 
 export default Data;
