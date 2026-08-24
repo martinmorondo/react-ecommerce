@@ -1,5 +1,6 @@
-import React, { FormEvent, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/cartStore';
 import { CartItem } from '../types';
 
@@ -27,12 +28,31 @@ const initialCustomerData: CustomerData = {
   postalCode: '',
 };
 
-const Checkout: React.FC = () => {
+const FREE_SHIPPING_THRESHOLD = 100_000;
+const STANDARD_SHIPPING_COST = 5_000;
+
+const formatPrice = (price: number) =>
+  price.toLocaleString('es-AR', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+const calculateShipping = (subtotal: number): number => {
+  return subtotal >= FREE_SHIPPING_THRESHOLD
+    ? 0
+    : STANDARD_SHIPPING_COST;
+};
+
+const Checkout = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const cartItem = useCartStore((state) => state.cartItem);
-  const clearCart = useCartStore((state) => state.clearCart);
+  const getTotalItems = useCartStore(
+    (state) => state.getTotalItems
+  );
+  const clearCart = useCartStore(
+    (state) => state.clearCart
+  );
 
   const [customerData, setCustomerData] =
     useState<CustomerData>(initialCustomerData);
@@ -40,27 +60,21 @@ const Checkout: React.FC = () => {
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentMethod>('card');
 
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isProcessing, setIsProcessing] =
+    useState(false);
+
   const [error, setError] = useState('');
 
-  const totalItems = cartItem.reduce(
-    (total, item) => total + item.qty,
-    0
-  );
+  const totalItems = getTotalItems();
 
   const subtotal = cartItem.reduce(
-    (total, item) => total + Number(item.price) * item.qty,
+    (total, item) =>
+      total + item.price * item.qty,
     0
   );
 
-  const shipping = subtotal >= 100000 ? 0 : 5000;
+  const shipping = calculateShipping(subtotal);
   const total = subtotal + shipping;
-
-  const formatPrice = (price: number) =>
-    price.toLocaleString('es-AR', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
 
   const updateField = (
     field: keyof CustomerData,
@@ -72,50 +86,96 @@ const Checkout: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
+
+    if (cartItem.length === 0) {
+      setError(
+        'Tu carrito está vacío. Agregá productos antes de continuar.'
+      );
+      return;
+    }
+
     setError('');
     setIsProcessing(true);
 
-    /*
-     * Simulación de procesamiento del pedido.
-     * Más adelante este bloque puede reemplazarse
-     * por una llamada real a una API.
-     */
-    await new Promise((resolve) => setTimeout(resolve, 1800));
+    try {
+      /*
+       * Simulación temporal del procesamiento.
+       * En producción esto debería reemplazarse
+       * por una llamada a la API/backend.
+       */
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 1800);
+      });
 
-    const orderNumber = `EC-${Math.random()
-      .toString(36)
-      .substring(2, 8)
-      .toUpperCase()}`;
+      const orderNumber = `EC-${Math.random()
+        .toString(36)
+        .slice(2, 8)
+        .toUpperCase()}`;
 
-    const orderData = {
-      orderNumber,
-      total,
-      totalItems,
-      paymentMethod,
-      customer: customerData,
-      createdAt: new Date().toISOString(),
-    };
+      const orderData = {
+        orderNumber,
+        total,
+        totalItems,
+        paymentMethod,
+        customer: customerData,
+        createdAt: new Date().toISOString(),
+      };
 
-    clearCart();
+      clearCart();
 
-    navigate('/order-success', {
-      replace: true,
-      state: orderData,
-    });
-
-    setIsProcessing(false);
+      navigate('/order-success', {
+        replace: true,
+        state: orderData,
+      });
+    } catch {
+      setError(
+        'No pudimos procesar la compra. Intentá nuevamente.'
+      );
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   /*
-   * Evitamos acceder al checkout sin productos.
+   * No se puede avanzar al checkout sin productos.
    */
-  if (cartItem.length === 0 && !location.state?.fromSuccess) {
+  if (cartItem.length === 0) {
     return (
-      <main className="min-h-[70vh] bg-background px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto flex min-h-[500px] max-w-3xl flex-col items-center justify-center rounded-3xl bg-white px-6 py-12 text-center shadow-[0_8px_30px_rgba(3,0,71,0.05)]">
-          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10 text-primary">
+      <main
+        className="
+          min-h-[70vh]
+          bg-background
+          px-4 py-12
+          sm:px-6 lg:px-8
+        "
+      >
+        <div
+          className="
+            mx-auto
+            flex min-h-[500px]
+            max-w-3xl
+            flex-col items-center justify-center
+            rounded-3xl
+            bg-white
+            px-6 py-12
+            text-center
+            shadow-[0_8px_30px_rgba(3,0,71,0.05)]
+          "
+        >
+          <div
+            className="
+              flex h-20 w-20
+              items-center justify-center
+              rounded-3xl
+              bg-primary/10
+              text-primary
+            "
+            aria-hidden="true"
+          >
             <i className="fa-solid fa-cart-shopping text-3xl" />
           </div>
 
@@ -124,14 +184,15 @@ const Checkout: React.FC = () => {
           </h1>
 
           <p className="mt-2 max-w-md text-sm leading-6 text-gray-500">
-            Tu carrito está vacío. Agregá productos antes de continuar
-            con la compra.
+            Tu carrito está vacío. Agregá productos antes de
+            continuar con la compra.
           </p>
 
           <Link
             to="/shop"
             className="
-              mt-6 inline-flex items-center gap-2
+              mt-6
+              inline-flex items-center gap-2
               rounded-xl
               bg-primary
               px-6 py-3
@@ -140,10 +201,18 @@ const Checkout: React.FC = () => {
               transition-all duration-200
               hover:-translate-y-0.5
               hover:shadow-primary/30
+              focus:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-primary/40
+              focus-visible:ring-offset-2
             "
           >
             Explorar productos
-            <i className="fa-solid fa-arrow-right text-xs" />
+
+            <i
+              className="fa-solid fa-arrow-right text-xs"
+              aria-hidden="true"
+            />
           </Link>
         </div>
       </main>
@@ -153,9 +222,8 @@ const Checkout: React.FC = () => {
   return (
     <main className="min-h-screen bg-background py-10 sm:py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
-        {/* Encabezado */}
-        <div className="mb-8">
+        {/* Header */}
+        <header className="mb-8">
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
             Finalizar compra
           </p>
@@ -167,24 +235,45 @@ const Checkout: React.FC = () => {
           <p className="mt-1 text-sm text-gray-500">
             Completá tus datos para confirmar tu pedido.
           </p>
-        </div>
+        </header>
 
         <form
           onSubmit={handleSubmit}
           className="grid gap-6 lg:grid-cols-[1fr_380px]"
         >
-          {/* Formulario */}
+          {/* Form */}
           <div className="space-y-6">
-
-            {/* Datos personales */}
-            <section className="rounded-2xl border border-black/[0.06] bg-white p-5 shadow-[0_5px_25px_rgba(3,0,71,0.05)] sm:p-6">
+            {/* Personal data */}
+            <section
+              aria-labelledby="customer-data-title"
+              className="
+                rounded-2xl
+                border border-black/[0.06]
+                bg-white
+                p-5
+                shadow-[0_5px_25px_rgba(3,0,71,0.05)]
+                sm:p-6
+              "
+            >
               <div className="mb-5 flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <span
+                  className="
+                    flex h-10 w-10
+                    items-center justify-center
+                    rounded-xl
+                    bg-primary/10
+                    text-primary
+                  "
+                  aria-hidden="true"
+                >
                   <i className="fa-solid fa-user text-sm" />
                 </span>
 
                 <div>
-                  <h2 className="text-base font-bold text-secondary">
+                  <h2
+                    id="customer-data-title"
+                    className="text-base font-bold text-secondary"
+                  >
                     Datos personales
                   </h2>
 
@@ -243,15 +332,37 @@ const Checkout: React.FC = () => {
               </div>
             </section>
 
-            {/* Dirección */}
-            <section className="rounded-2xl border border-black/[0.06] bg-white p-5 shadow-[0_5px_25px_rgba(3,0,71,0.05)] sm:p-6">
+            {/* Shipping address */}
+            <section
+              aria-labelledby="shipping-title"
+              className="
+                rounded-2xl
+                border border-black/[0.06]
+                bg-white
+                p-5
+                shadow-[0_5px_25px_rgba(3,0,71,0.05)]
+                sm:p-6
+              "
+            >
               <div className="mb-5 flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <span
+                  className="
+                    flex h-10 w-10
+                    items-center justify-center
+                    rounded-xl
+                    bg-primary/10
+                    text-primary
+                  "
+                  aria-hidden="true"
+                >
                   <i className="fa-solid fa-location-dot text-sm" />
                 </span>
 
                 <div>
-                  <h2 className="text-base font-bold text-secondary">
+                  <h2
+                    id="shipping-title"
+                    className="text-base font-bold text-secondary"
+                  >
                     Dirección de envío
                   </h2>
 
@@ -310,15 +421,37 @@ const Checkout: React.FC = () => {
               </div>
             </section>
 
-            {/* Método de pago */}
-            <section className="rounded-2xl border border-black/[0.06] bg-white p-5 shadow-[0_5px_25px_rgba(3,0,71,0.05)] sm:p-6">
+            {/* Payment */}
+            <section
+              aria-labelledby="payment-title"
+              className="
+                rounded-2xl
+                border border-black/[0.06]
+                bg-white
+                p-5
+                shadow-[0_5px_25px_rgba(3,0,71,0.05)]
+                sm:p-6
+              "
+            >
               <div className="mb-5 flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <span
+                  className="
+                    flex h-10 w-10
+                    items-center justify-center
+                    rounded-xl
+                    bg-primary/10
+                    text-primary
+                  "
+                  aria-hidden="true"
+                >
                   <i className="fa-solid fa-credit-card text-sm" />
                 </span>
 
                 <div>
-                  <h2 className="text-base font-bold text-secondary">
+                  <h2
+                    id="payment-title"
+                    className="text-base font-bold text-secondary"
+                  >
                     Método de pago
                   </h2>
 
@@ -328,7 +461,11 @@ const Checkout: React.FC = () => {
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <fieldset className="space-y-3">
+                <legend className="sr-only">
+                  Seleccioná un método de pago
+                </legend>
+
                 <PaymentOption
                   value="card"
                   selected={paymentMethod}
@@ -355,26 +492,55 @@ const Checkout: React.FC = () => {
                   title="Pago en efectivo"
                   description="Simular pago en efectivo"
                 />
-              </div>
+              </fieldset>
             </section>
 
             {error && (
               <div
                 role="alert"
-                className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+                className="
+                  rounded-xl
+                  border border-red-200
+                  bg-red-50
+                  px-4 py-3
+                  text-sm text-red-600
+                "
               >
-                <i className="fa-solid fa-circle-exclamation mr-2" />
+                <i
+                  className="fa-solid fa-circle-exclamation mr-2"
+                  aria-hidden="true"
+                />
                 {error}
               </div>
             )}
           </div>
 
-          {/* Resumen */}
-          <aside className="h-fit lg:sticky lg:top-28">
-            <div className="rounded-2xl border border-black/[0.06] bg-white p-5 shadow-[0_8px_30px_rgba(3,0,71,0.06)] sm:p-6">
-
+          {/* Summary */}
+          <aside
+            className="h-fit lg:sticky lg:top-28"
+            aria-label="Resumen del pedido"
+          >
+            <div
+              className="
+                rounded-2xl
+                border border-black/[0.06]
+                bg-white
+                p-5
+                shadow-[0_8px_30px_rgba(3,0,71,0.06)]
+                sm:p-6
+              "
+            >
               <div className="mb-5 flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <span
+                  className="
+                    flex h-10 w-10
+                    items-center justify-center
+                    rounded-xl
+                    bg-primary/10
+                    text-primary
+                  "
+                  aria-hidden="true"
+                >
                   <i className="fa-solid fa-receipt text-sm" />
                 </span>
 
@@ -385,12 +551,21 @@ const Checkout: React.FC = () => {
 
                   <p className="text-xs text-gray-400">
                     {totalItems}{' '}
-                    {totalItems === 1 ? 'producto' : 'productos'}
+                    {totalItems === 1
+                      ? 'producto'
+                      : 'productos'}
                   </p>
                 </div>
               </div>
 
-              <div className="max-h-[280px] space-y-4 overflow-y-auto pr-1">
+              <div
+                className="
+                  max-h-[280px]
+                  space-y-4
+                  overflow-y-auto
+                  pr-1
+                "
+              >
                 {cartItem.map((item: CartItem) => (
                   <div
                     key={item.id}
@@ -399,50 +574,74 @@ const Checkout: React.FC = () => {
                     <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-background p-2">
                       <img
                         src={item.cover}
-                        alt={item.name}
+                        alt={`Imagen de ${item.name}`}
                         className="h-full w-full object-contain"
                       />
 
-                      <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-[9px] font-bold text-white">
+                      <span
+                        className="
+                          absolute -right-1.5 -top-1.5
+                          flex h-5 min-w-5
+                          items-center justify-center
+                          rounded-full
+                          bg-secondary
+                          px-1
+                          text-[9px] font-bold
+                          text-white
+                        "
+                        aria-label={`Cantidad: ${item.qty}`}
+                      >
                         {item.qty}
                       </span>
                     </div>
 
                     <div className="min-w-0 flex-1">
                       <p
-                        className="truncate text-sm font-semibold text-secondary"
+                        className="
+                          truncate
+                          text-sm font-semibold
+                          text-secondary
+                        "
                         title={item.name}
                       >
                         {item.name}
                       </p>
 
                       <p className="mt-0.5 text-xs text-gray-400">
-                        ${formatPrice(Number(item.price))} c/u
+                        ${formatPrice(item.price)} c/u
                       </p>
                     </div>
 
                     <span className="text-sm font-bold text-secondary">
                       $
                       {formatPrice(
-                        Number(item.price) * item.qty
+                        item.price * item.qty
                       )}
                     </span>
                   </div>
                 ))}
               </div>
 
-              <div className="my-5 h-px bg-black/[0.06]" />
+              <div
+                className="my-5 h-px bg-black/[0.06]"
+                aria-hidden="true"
+              />
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Subtotal</span>
+                  <span className="text-gray-500">
+                    Subtotal
+                  </span>
+
                   <span className="font-medium text-secondary">
                     ${formatPrice(subtotal)}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Envío</span>
+                  <span className="text-gray-500">
+                    Envío
+                  </span>
 
                   {shipping === 0 ? (
                     <span className="font-semibold text-green-600">
@@ -456,7 +655,10 @@ const Checkout: React.FC = () => {
                 </div>
               </div>
 
-              <div className="my-5 h-px bg-black/[0.06]" />
+              <div
+                className="my-5 h-px bg-black/[0.06]"
+                aria-hidden="true"
+              />
 
               <div className="flex items-end justify-between gap-4">
                 <div>
@@ -464,9 +666,9 @@ const Checkout: React.FC = () => {
                     Total
                   </span>
 
-                  <span className="mt-1 block text-2xl font-extrabold text-secondary">
+                  <strong className="mt-1 block text-2xl font-extrabold text-secondary">
                     ${formatPrice(total)}
-                  </span>
+                  </strong>
                 </div>
               </div>
 
@@ -474,7 +676,8 @@ const Checkout: React.FC = () => {
                 type="submit"
                 disabled={isProcessing}
                 className="
-                  mt-6 flex w-full
+                  mt-6
+                  flex w-full
                   items-center justify-center gap-2
                   rounded-xl
                   bg-primary
@@ -484,6 +687,10 @@ const Checkout: React.FC = () => {
                   transition-all duration-200
                   hover:-translate-y-0.5
                   hover:shadow-primary/30
+                  focus:outline-none
+                  focus-visible:ring-2
+                  focus-visible:ring-primary/40
+                  focus-visible:ring-offset-2
                   disabled:cursor-not-allowed
                   disabled:opacity-70
                   disabled:hover:translate-y-0
@@ -491,19 +698,47 @@ const Checkout: React.FC = () => {
               >
                 {isProcessing ? (
                   <>
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    Procesando compra...
+                    <span
+                      className="
+                        h-4 w-4
+                        animate-spin
+                        rounded-full
+                        border-2
+                        border-white/30
+                        border-t-white
+                      "
+                      aria-hidden="true"
+                    />
+
+                    <span>
+                      Procesando compra...
+                    </span>
                   </>
                 ) : (
                   <>
                     Confirmar compra
-                    <i className="fa-solid fa-arrow-right text-xs" />
+
+                    <i
+                      className="fa-solid fa-arrow-right text-xs"
+                      aria-hidden="true"
+                    />
                   </>
                 )}
               </button>
 
-              <div className="mt-4 flex items-center justify-center gap-2 text-[10px] text-gray-400">
-                <i className="fa-solid fa-lock text-primary" />
+              <div
+                className="
+                  mt-4
+                  flex items-center justify-center gap-2
+                  text-[10px]
+                  text-gray-400
+                "
+              >
+                <i
+                  className="fa-solid fa-lock text-primary"
+                  aria-hidden="true"
+                />
+
                 Simulación de compra segura
               </div>
             </div>
@@ -528,7 +763,7 @@ interface InputFieldProps {
   required?: boolean;
 }
 
-const InputField: React.FC<InputFieldProps> = ({
+const InputField = ({
   label,
   name,
   value,
@@ -536,12 +771,16 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   type = 'text',
   required = false,
-}) => {
+}: InputFieldProps) => {
   return (
     <div>
       <label
         htmlFor={name}
-        className="mb-1.5 block text-xs font-semibold text-secondary"
+        className="
+          mb-1.5 block
+          text-xs font-semibold
+          text-secondary
+        "
       >
         {label}
       </label>
@@ -551,7 +790,9 @@ const InputField: React.FC<InputFieldProps> = ({
         name={name}
         type={type}
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) =>
+          onChange(event.target.value)
+        }
         placeholder={placeholder}
         required={required}
         className="
@@ -575,7 +816,7 @@ const InputField: React.FC<InputFieldProps> = ({
 };
 
 /* =========================================================
-   Método de pago
+   Payment option
    ========================================================= */
 
 interface PaymentOptionProps {
@@ -587,14 +828,14 @@ interface PaymentOptionProps {
   description: string;
 }
 
-const PaymentOption: React.FC<PaymentOptionProps> = ({
+const PaymentOption = ({
   value,
   selected,
   onChange,
   icon,
   title,
   description,
-}) => {
+}: PaymentOptionProps) => {
   const isSelected = selected === value;
 
   return (
@@ -605,6 +846,7 @@ const PaymentOption: React.FC<PaymentOptionProps> = ({
         border
         p-3.5
         transition-all duration-200
+
         ${
           isSelected
             ? 'border-primary/30 bg-primary/5'
@@ -623,14 +865,17 @@ const PaymentOption: React.FC<PaymentOptionProps> = ({
 
       <span
         className={`
-          flex h-10 w-10 shrink-0 items-center justify-center
+          flex h-10 w-10 shrink-0
+          items-center justify-center
           rounded-xl
+
           ${
             isSelected
               ? 'bg-primary text-white'
               : 'bg-background text-gray-400'
           }
         `}
+        aria-hidden="true"
       >
         <i className={`fa-solid ${icon} text-sm`} />
       </span>
@@ -647,14 +892,18 @@ const PaymentOption: React.FC<PaymentOptionProps> = ({
 
       <span
         className={`
-          flex h-5 w-5 items-center justify-center
-          rounded-full border
+          flex h-5 w-5
+          items-center justify-center
+          rounded-full
+          border
+
           ${
             isSelected
               ? 'border-primary bg-primary text-white'
               : 'border-gray-300'
           }
         `}
+        aria-hidden="true"
       >
         {isSelected && (
           <i className="fa-solid fa-check text-[8px]" />

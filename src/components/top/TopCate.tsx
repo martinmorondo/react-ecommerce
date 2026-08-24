@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { TopCart } from './TopCart';
 import { TopItem } from './Tdata';
@@ -7,24 +6,26 @@ interface TopCateProps {
   topItems: TopItem[];
 }
 
-export const TopCate: React.FC<TopCateProps> = ({ topItems }) => {
+export const TopCate = ({ topItems }: TopCateProps) => {
   return (
     <section
       aria-labelledby="top-categories-title"
       className="w-full bg-background py-10 sm:py-12 lg:py-14"
     >
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-
-        {/* Encabezado */}
-        <div className="mb-6 flex items-end justify-between gap-4 sm:mb-8">
+        {/* Header */}
+        <header className="mb-6 flex items-end justify-between gap-4 sm:mb-8">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="
-              flex h-11 w-11 shrink-0
-              items-center justify-center
-              rounded-2xl
-              bg-primary/10
-              text-primary
-            ">
+            <div
+              className="
+                flex h-11 w-11 shrink-0
+                items-center justify-center
+                rounded-2xl
+                bg-primary/10
+                text-primary
+              "
+              aria-hidden="true"
+            >
               <i className="fa-solid fa-border-all text-base" />
             </div>
 
@@ -35,7 +36,13 @@ export const TopCate: React.FC<TopCateProps> = ({ topItems }) => {
 
               <h2
                 id="top-categories-title"
-                className="mt-1 truncate text-xl font-extrabold tracking-tight text-secondary sm:text-2xl"
+                className="
+                  mt-1 truncate
+                  text-xl font-extrabold
+                  tracking-tight
+                  text-secondary
+                  sm:text-2xl
+                "
               >
                 Categorías destacadas
               </h2>
@@ -52,23 +59,32 @@ export const TopCate: React.FC<TopCateProps> = ({ topItems }) => {
               transition-all duration-200
               hover:bg-primary/10
               focus:outline-none
-              focus:ring-2
-              focus:ring-primary/30
+              focus-visible:ring-2
+              focus-visible:ring-primary/30
+              focus-visible:ring-offset-2
             "
           >
-            <span className="hidden sm:inline">Ver todas</span>
-            <span className="sm:hidden">Ver más</span>
+            <span className="hidden sm:inline">
+              Ver todas
+            </span>
 
-            <i className="
-              fa-solid fa-arrow-right
-              text-xs
-              transition-transform duration-200
-              group-hover:translate-x-1
-            " />
+            <span className="sm:hidden">
+              Ver más
+            </span>
+
+            <i
+              className="
+                fa-solid fa-arrow-right
+                text-xs
+                transition-transform duration-200
+                group-hover:translate-x-1
+              "
+              aria-hidden="true"
+            />
           </Link>
-        </div>
+        </header>
 
-        {/* Categorías */}
+        {/* Categories */}
         <TopCart topItems={topItems} />
       </div>
     </section>

@@ -1,5 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import type {
+  ChangeEvent,
+  FormEvent,
+} from 'react';
+import {
+  Link,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import { useCartStore } from '../../store/cartStore';
 import logo from '../../assets/img/phone-logo.png';
 
@@ -11,32 +19,52 @@ const categories = [
   { label: 'Watch', value: 'watch' },
   { label: 'Glasses', value: 'glasses' },
   { label: 'Headphones', value: 'headphones' },
-];
+] as const;
 
-const Search: React.FC = () => {
-  const cartItem = useCartStore((state) => state.cartItem);
-  const navigate = useNavigate();
-
-  const [searchValue, setSearchValue] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  const totalCartItems = cartItem.reduce(
-    (total, item) => total + item.qty,
-    0
+const Search = () => {
+  const getTotalItems = useCartStore(
+    (state) => state.getTotalItems
   );
 
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const urlSearchQuery = searchParams.get('search') ?? '';
+  const urlCategory =
+    searchParams.get('category') ?? 'all';
+
+  const [searchValue, setSearchValue] =
+    useState(urlSearchQuery);
+
+  const [isSearchFocused, setIsSearchFocused] =
+    useState(false);
+
+  const searchInputRef =
+    useRef<HTMLInputElement>(null);
+
+  const totalCartItems = getTotalItems();
+
+  /*
+   * Mantiene el input sincronizado con la URL.
+   * Esto permite que /shop?search=iphone
+   * también muestre "iphone" en el buscador.
+   */
+  useEffect(() => {
+    setSearchValue(urlSearchQuery);
+  }, [urlSearchQuery]);
+
+  /*
+   * Atajos de teclado globales.
+   */
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement;
+      const target = event.target as HTMLElement | null;
 
       const isTyping =
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.tagName === 'SELECT' ||
-        target.isContentEditable;
+        target?.tagName === 'INPUT' ||
+        target?.tagName === 'TEXTAREA' ||
+        target?.tagName === 'SELECT' ||
+        target?.isContentEditable;
 
       if (event.key === '/' && !isTyping) {
         event.preventDefault();
@@ -49,20 +77,34 @@ const Search: React.FC = () => {
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener(
+      'keydown',
+      handleKeyDown
+    );
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener(
+        'keydown',
+        handleKeyDown
+      );
     };
   }, []);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (
+    event: FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
 
     const query = searchValue.trim();
 
-    if (!query && selectedCategory === 'all') {
-      searchInputRef.current?.focus();
+    /*
+     * Si no hay búsqueda ni categoría,
+     * volvemos simplemente a la tienda.
+     */
+    if (!query && urlCategory === 'all') {
+      navigate('/shop');
+      searchInputRef.current?.blur();
+      setIsSearchFocused(false);
       return;
     }
 
@@ -72,20 +114,46 @@ const Search: React.FC = () => {
       params.set('search', query);
     }
 
-    if (selectedCategory !== 'all') {
-      params.set('category', selectedCategory);
+    if (urlCategory !== 'all') {
+      params.set('category', urlCategory);
     }
 
-    navigate(`/shop?${params.toString()}`);
+    const queryString = params.toString();
 
-    setIsSearchFocused(false);
+    navigate(
+      queryString
+        ? `/shop?${queryString}`
+        : '/shop'
+    );
+
     searchInputRef.current?.blur();
+    setIsSearchFocused(false);
   };
 
   const handleCategoryChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: ChangeEvent<HTMLSelectElement>
   ) => {
-    setSelectedCategory(event.target.value);
+    const category = event.target.value;
+
+    const params = new URLSearchParams();
+
+    const query = searchValue.trim();
+
+    if (query) {
+      params.set('search', query);
+    }
+
+    if (category !== 'all') {
+      params.set('category', category);
+    }
+
+    const queryString = params.toString();
+
+    navigate(
+      queryString
+        ? `/shop?${queryString}`
+        : '/shop'
+    );
   };
 
   const clearSearch = () => {
@@ -94,10 +162,21 @@ const Search: React.FC = () => {
   };
 
   return (
-    <section className="relative w-full border-b border-black/[0.06] bg-white py-4 sm:py-5">
+    <section
+      aria-label="Búsqueda y navegación"
+      className="
+        relative
+        w-full
+        border-b border-black/[0.06]
+        bg-white
+        py-4
+        sm:py-5
+      "
+    >
       <div
         className="
-          mx-auto flex max-w-7xl items-center gap-3
+          mx-auto
+          flex max-w-7xl items-center gap-3
           px-4
           sm:gap-4 sm:px-6
           lg:gap-6 lg:px-8
@@ -107,11 +186,19 @@ const Search: React.FC = () => {
         <Link
           to="/"
           aria-label="Store - Inicio"
-          className="group flex shrink-0 items-center gap-2.5"
+          className="
+            group
+            flex shrink-0 items-center gap-2.5
+            rounded-lg
+            focus:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-primary/40
+          "
         >
           <span
             className="
-              flex h-11 w-11 items-center justify-center
+              flex h-11 w-11
+              items-center justify-center
               rounded-xl
               bg-background
               transition-all duration-300
@@ -122,7 +209,8 @@ const Search: React.FC = () => {
               src={logo}
               alt="Store"
               className="
-                h-8 w-8 object-contain
+                h-8 w-8
+                object-contain
                 transition-transform duration-300
                 group-hover:scale-105
               "
@@ -131,7 +219,8 @@ const Search: React.FC = () => {
 
           <span
             className="
-              hidden text-2xl font-black
+              hidden
+              text-2xl font-black
               tracking-[-0.04em]
               text-secondary
               md:block
@@ -141,7 +230,7 @@ const Search: React.FC = () => {
           </span>
         </Link>
 
-        {/* Buscador */}
+        {/* Search */}
         <form
           onSubmit={handleSubmit}
           className="min-w-0 flex-1"
@@ -163,9 +252,13 @@ const Search: React.FC = () => {
               }
             `}
           >
-            {/* Icono */}
+            {/* Search icon */}
             <span
-              className="flex h-full shrink-0 items-center pl-4 text-gray-400"
+              className="
+                flex h-full shrink-0
+                items-center pl-4
+                text-gray-400
+              "
               aria-hidden="true"
             >
               <i className="fa-solid fa-magnifying-glass text-sm" />
@@ -176,9 +269,15 @@ const Search: React.FC = () => {
               ref={searchInputRef}
               type="search"
               value={searchValue}
-              onChange={(event) => setSearchValue(event.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
+              onChange={(event) =>
+                setSearchValue(event.target.value)
+              }
+              onFocus={() =>
+                setIsSearchFocused(true)
+              }
+              onBlur={() =>
+                setIsSearchFocused(false)
+              }
               placeholder="¿Qué estás buscando?"
               autoComplete="off"
               spellCheck={false}
@@ -196,21 +295,22 @@ const Search: React.FC = () => {
                 focus:border-0
                 focus:outline-none
                 focus:ring-0
-                focus-visible:outline-none
-                focus-visible:ring-0
                 sm:text-[15px]
               "
             />
 
-            {/* Limpiar */}
+            {/* Clear */}
             {searchValue && (
               <button
                 type="button"
-                onMouseDown={(event) => event.preventDefault()}
+                onMouseDown={(event) =>
+                  event.preventDefault()
+                }
                 onClick={clearSearch}
                 aria-label="Limpiar búsqueda"
                 className="
-                  mr-1 flex h-9 w-9 shrink-0
+                  mr-1
+                  flex h-9 w-9 shrink-0
                   items-center justify-center
                   rounded-xl
                   text-gray-400
@@ -218,15 +318,18 @@ const Search: React.FC = () => {
                   hover:bg-gray-100
                   hover:text-secondary
                   focus:outline-none
-                  focus:ring-2
-                  focus:ring-primary/30
+                  focus-visible:ring-2
+                  focus-visible:ring-primary/30
                 "
               >
-                <i className="fa-solid fa-xmark text-xs" />
+                <i
+                  className="fa-solid fa-xmark text-xs"
+                  aria-hidden="true"
+                />
               </button>
             )}
 
-            {/* Atajo */}
+            {/* Keyboard shortcut */}
             {!searchValue && (
               <span
                 className="
@@ -245,15 +348,18 @@ const Search: React.FC = () => {
               </span>
             )}
 
-            {/* Categorías */}
+            {/* Category */}
             <div className="hidden h-full lg:flex">
-              <label htmlFor="search-category" className="sr-only">
+              <label
+                htmlFor="search-category"
+                className="sr-only"
+              >
                 Seleccionar categoría
               </label>
 
               <select
                 id="search-category"
-                value={selectedCategory}
+                value={urlCategory}
                 onChange={handleCategoryChange}
                 className="
                   h-full
@@ -263,25 +369,28 @@ const Search: React.FC = () => {
                   text-xs font-semibold
                   text-secondary
                   outline-none
-                  ring-0
                   focus:outline-none
                   focus:ring-0
                 "
               >
                 {categories.map((category) => (
-                  <option key={category.value} value={category.value}>
+                  <option
+                    key={category.value}
+                    value={category.value}
+                  >
                     {category.label}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Buscar */}
+            {/* Search button */}
             <button
               type="submit"
               aria-label="Buscar productos"
               className="
-                mr-1 flex h-10 w-10 shrink-0
+                mr-1
+                flex h-10 w-10 shrink-0
                 items-center justify-center
                 rounded-xl
                 bg-primary
@@ -295,21 +404,30 @@ const Search: React.FC = () => {
                 active:translate-y-0
                 active:scale-95
                 focus:outline-none
-                focus:ring-2
-                focus:ring-primary/40
+                focus-visible:ring-2
+                focus-visible:ring-primary/40
+                focus-visible:ring-offset-2
               "
             >
-              <i className="fa-solid fa-magnifying-glass text-xs" />
+              <i
+                className="fa-solid fa-magnifying-glass text-xs"
+                aria-hidden="true"
+              />
             </button>
           </div>
         </form>
 
-        {/* Acciones */}
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        {/* Actions */}
+        <div
+          className="
+            flex shrink-0
+            items-center
+            gap-2
+            sm:gap-3
+          "
+        >
           {/* Usuario */}
-          <button
-            type="button"
-            aria-label="Perfil de usuario"
+          <div
             className="
               hidden h-11 w-11
               items-center justify-center
@@ -317,26 +435,32 @@ const Search: React.FC = () => {
               border border-black/[0.06]
               bg-background
               text-secondary
-              transition-all duration-300
-              hover:border-primary/20
-              hover:bg-primary/10
-              hover:text-primary
-              focus:outline-none
-              focus:ring-2
-              focus:ring-primary/30
               md:flex
             "
+            aria-label="Perfil de usuario"
           >
-            <i className="fa-solid fa-user text-sm" />
-          </button>
+            <i
+              className="fa-solid fa-user text-sm"
+              aria-hidden="true"
+            />
+          </div>
 
           {/* Carrito */}
           <Link
             to="/cart"
             aria-label={`Ir al carrito. ${totalCartItems} ${
-              totalCartItems === 1 ? 'producto' : 'productos'
+              totalCartItems === 1
+                ? 'producto'
+                : 'productos'
             }`}
-            className="group relative"
+            className="
+              group relative
+              rounded-xl
+              focus:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-primary/40
+              focus-visible:ring-offset-2
+            "
           >
             <span
               className="
@@ -352,7 +476,10 @@ const Search: React.FC = () => {
                 group-hover:text-primary
               "
             >
-              <i className="fa-solid fa-cart-shopping text-sm" />
+              <i
+                className="fa-solid fa-cart-shopping text-sm"
+                aria-hidden="true"
+              />
             </span>
 
             {totalCartItems > 0 && (
@@ -370,8 +497,11 @@ const Search: React.FC = () => {
                   shadow-primary/20
                   ring-2 ring-white
                 "
+                aria-hidden="true"
               >
-                {totalCartItems > 99 ? '99+' : totalCartItems}
+                {totalCartItems > 99
+                  ? '99+'
+                  : totalCartItems}
               </span>
             )}
           </Link>

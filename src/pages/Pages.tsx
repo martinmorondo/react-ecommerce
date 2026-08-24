@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Home from '../components/main/Home';
 import FlashDeals from '../components/flashDeals/FlashDeals';
 import { TopCate } from '../components/top/TopCate';
@@ -8,25 +8,24 @@ import Announcement from '../components/announcements/Announcement';
 import Wrapper from '../components/wrapper/Wrapper';
 import { useProductStore } from '../store/productStore';
 
-const Pages: React.FC = () => {
-  const {
-    products,
-    isLoading,
-    error,
-    fetchProducts,
-  } = useProductStore();
+const Pages = () => {
+  const products = useProductStore((state) => state.products);
+  const isLoading = useProductStore((state) => state.isLoading);
+  const hasLoaded = useProductStore((state) => state.hasLoaded);
+  const error = useProductStore((state) => state.error);
+  const fetchProducts = useProductStore((state) => state.fetchProducts);
 
   useEffect(() => {
-    if (products.flashDeals.length === 0) {
-      fetchProducts();
+    if (!hasLoaded && !isLoading) {
+      void fetchProducts();
     }
-  }, [fetchProducts, products.flashDeals.length]);
+  }, [fetchProducts, hasLoaded, isLoading]);
 
   /* ---------------------------------- */
-  /* Loading */
+  /* Loading inicial */
   /* ---------------------------------- */
 
-  if (isLoading) {
+  if (isLoading && !hasLoaded) {
     return (
       <main
         className="
@@ -66,7 +65,7 @@ const Pages: React.FC = () => {
   /* Error */
   /* ---------------------------------- */
 
-  if (error) {
+  if (error && !hasLoaded) {
     return (
       <main
         className="
@@ -86,6 +85,7 @@ const Pages: React.FC = () => {
             bg-red-50
             text-red-500
           "
+          aria-hidden="true"
         >
           <i className="fa-solid fa-triangle-exclamation text-2xl" />
         </div>
@@ -100,7 +100,7 @@ const Pages: React.FC = () => {
 
         <button
           type="button"
-          onClick={fetchProducts}
+          onClick={() => void fetchProducts()}
           className="
             mt-6
             inline-flex items-center gap-2
@@ -119,7 +119,11 @@ const Pages: React.FC = () => {
             focus-visible:ring-offset-2
           "
         >
-          <i className="fa-solid fa-rotate-right text-xs" />
+          <i
+            className="fa-solid fa-rotate-right text-xs"
+            aria-hidden="true"
+          />
+
           Reintentar
         </button>
       </main>

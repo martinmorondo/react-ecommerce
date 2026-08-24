@@ -1,8 +1,8 @@
-import React from 'react';
 import {
   BrowserRouter as Router,
-  Routes,
+  Navigate,
   Route,
+  Routes,
 } from 'react-router-dom';
 
 import Header from './components/header/Header';
@@ -11,24 +11,28 @@ import Cart from './common/Cart/Cart';
 import Footer from './common/Footer/Footer';
 import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
+import ShopPage from './pages/ShopPage';
 
-const App: React.FC = () => {
+const App = () => {
   return (
     <Router>
       <Header />
 
       <Routes>
-        {/* Home */}
         <Route path="/" element={<Pages />} />
-
-        {/* Carrito */}
+        <Route path="/shop" element={<ShopPage />} />
         <Route path="/cart" element={<Cart />} />
-
-        {/* Checkout */}
         <Route path="/checkout" element={<Checkout />} />
+        <Route
+          path="/order-success"
+          element={<OrderSuccess />}
+        />
 
-        {/* Compra realizada */}
-        <Route path="/order-success" element={<OrderSuccess />} />
+        {/* Fallback */}
+        <Route
+          path="*"
+          element={<Navigate to="/" replace />}
+        />
       </Routes>
 
       <Footer />

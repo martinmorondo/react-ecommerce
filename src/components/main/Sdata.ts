@@ -1,3 +1,15 @@
+type AppRoute =
+  | '/'
+  | '/shop'
+  | '/cart'
+  | '/checkout'
+  | '/order-success';
+
+interface SlideAction {
+  label: string;
+  href: AppRoute;
+}
+
 export interface SlideData {
   id: number;
   badge: string;
@@ -5,14 +17,8 @@ export interface SlideData {
   desc: string;
   cover: string;
   alt: string;
-  primaryAction?: {
-    label: string;
-    href: string;
-  };
-  secondaryAction?: {
-    label: string;
-    href: string;
-  };
+  primaryAction?: SlideAction;
+  secondaryAction?: SlideAction;
 }
 
 export const Sdata: SlideData[] = [
@@ -25,7 +31,7 @@ export const Sdata: SlideData[] = [
     alt: 'Productos tecnológicos de última generación',
     primaryAction: {
       label: 'Explorar colección',
-      href: '/pages',
+      href: '/shop',
     },
     secondaryAction: {
       label: 'Ver productos',
@@ -45,8 +51,8 @@ export const Sdata: SlideData[] = [
       href: '/shop',
     },
     secondaryAction: {
-      label: 'Ver ofertas',
-      href: '/offers',
+      label: 'Ver productos',
+      href: '/shop',
     },
   },
 
@@ -62,8 +68,8 @@ export const Sdata: SlideData[] = [
       href: '/shop',
     },
     secondaryAction: {
-      label: 'Ver relojes',
-      href: '/pages',
+      label: 'Ver productos',
+      href: '/shop',
     },
   },
 ];

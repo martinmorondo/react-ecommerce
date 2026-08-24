@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
 import ReactSlick, { CustomArrowProps, Settings } from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { useCartStore } from '../../store/cartStore';
 import { TopItem } from './Tdata';
 
 const Slider = ReactSlick.default || ReactSlick;
@@ -11,7 +9,7 @@ const Slider = ReactSlick.default || ReactSlick;
    Flechas
    ========================================================= */
 
-const NextArrow: React.FC<CustomArrowProps> = ({ onClick }) => (
+const NextArrow = ({ onClick }: CustomArrowProps) => (
   <button
     type="button"
     onClick={onClick}
@@ -33,16 +31,20 @@ const NextArrow: React.FC<CustomArrowProps> = ({ onClick }) => (
       hover:shadow-primary/20
       active:scale-95
       focus:outline-none
-      focus:ring-2
-      focus:ring-primary/30
+      focus-visible:ring-2
+      focus-visible:ring-primary/30
+      focus-visible:ring-offset-2
       sm:h-11 sm:w-11
     "
   >
-    <i className="fa-solid fa-chevron-right text-xs" />
+    <i
+      className="fa-solid fa-chevron-right text-xs"
+      aria-hidden="true"
+    />
   </button>
 );
 
-const PrevArrow: React.FC<CustomArrowProps> = ({ onClick }) => (
+const PrevArrow = ({ onClick }: CustomArrowProps) => (
   <button
     type="button"
     onClick={onClick}
@@ -65,37 +67,30 @@ const PrevArrow: React.FC<CustomArrowProps> = ({ onClick }) => (
       hover:shadow-primary/20
       active:scale-95
       focus:outline-none
-      focus:ring-2
-      focus:ring-primary/30
+      focus-visible:ring-2
+      focus-visible:ring-primary/30
+      focus-visible:ring-offset-2
       sm:h-11 sm:w-11
     "
   >
-    <i className="fa-solid fa-chevron-left text-xs" />
+    <i
+      className="fa-solid fa-chevron-left text-xs"
+      aria-hidden="true"
+    />
   </button>
 );
 
 /* =========================================================
-   Tarjeta
+   Tarjeta destacada
    ========================================================= */
 
 interface TopProductCardProps {
   item: TopItem;
 }
 
-const TopProductCard: React.FC<TopProductCardProps> = ({ item }) => {
-  const addToCart = useCartStore((state) => state.addToCart);
-
-  const [isAdded, setIsAdded] = useState(false);
-
-  const handleAddToCart = () => {
-    addToCart(item);
-    setIsAdded(true);
-
-    window.setTimeout(() => {
-      setIsAdded(false);
-    }, 1200);
-  };
-
+const TopProductCard = ({
+  item,
+}: TopProductCardProps) => {
   return (
     <article
       className="
@@ -111,46 +106,52 @@ const TopProductCard: React.FC<TopProductCardProps> = ({ item }) => {
         hover:shadow-[0_15px_35px_rgba(3,0,71,0.10)]
       "
     >
-      {/* Encabezado */}
+      {/* Header */}
       <div className="flex items-center justify-between gap-2 p-4 pb-0">
-        <span className="
-          inline-flex
-          max-w-[55%]
-          truncate
-          rounded-full
-          bg-secondary
-          px-3 py-1.5
-          text-[10px] font-bold uppercase tracking-wider
-          text-white
-        ">
+        <span
+          className="
+            inline-flex
+            max-w-[55%]
+            truncate
+            rounded-full
+            bg-secondary
+            px-3 py-1.5
+            text-[10px] font-bold uppercase tracking-wider
+            text-white
+          "
+        >
           {item.para}
         </span>
 
-        <span className="
-          shrink-0
-          rounded-full
-          border border-primary/10
-          bg-primary/5
-          px-3 py-1.5
-          text-[10px] font-bold
-          text-primary
-        ">
+        <span
+          className="
+            shrink-0
+            rounded-full
+            border border-primary/10
+            bg-primary/5
+            px-3 py-1.5
+            text-[10px] font-bold
+            text-primary
+          "
+        >
           {item.desc}
         </span>
       </div>
 
-      {/* Imagen */}
-      <div className="
-        relative mx-4 mt-3
-        flex h-[230px]
-        items-center justify-center
-        overflow-hidden
-        rounded-2xl
-        bg-gradient-to-b from-gray-50 to-white
-      ">
+      {/* Image */}
+      <div
+        className="
+          relative mx-4 mt-3
+          flex h-[230px]
+          items-center justify-center
+          overflow-hidden
+          rounded-2xl
+          bg-gradient-to-b from-gray-50 to-white
+        "
+      >
         <img
           src={item.cover}
-          alt={item.para}
+          alt={`Imagen de ${item.para}`}
           loading="lazy"
           className="
             h-full w-full
@@ -162,78 +163,67 @@ const TopProductCard: React.FC<TopProductCardProps> = ({ item }) => {
           "
         />
 
-        {/* Brillo */}
-        <div className="
-          pointer-events-none
-          absolute right-0 top-0
-          h-24 w-24
-          rounded-full
-          bg-primary/5
-          blur-2xl
-        " />
+        <div
+          className="
+            pointer-events-none
+            absolute right-0 top-0
+            h-24 w-24
+            rounded-full
+            bg-primary/5
+            blur-2xl
+          "
+          aria-hidden="true"
+        />
       </div>
 
-      {/* Información */}
+      {/* Information */}
       <div className="mt-auto p-4">
         <div className="mb-4">
           <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
             Producto destacado
           </p>
 
-          <h3 className="mt-1 text-sm font-semibold text-secondary">
+          <h3
+            className="mt-1 text-sm font-semibold text-secondary"
+          >
             {item.para}
           </h3>
         </div>
 
-        <div className="
-          flex items-end justify-between gap-3
-          border-t border-black/[0.06]
-          pt-4
-        ">
+        <div
+          className="
+            flex items-end justify-between gap-3
+            border-t border-black/[0.06]
+            pt-4
+          "
+        >
           <div>
             <span className="block text-[10px] uppercase tracking-wider text-gray-400">
               Desde
             </span>
 
             <span className="mt-0.5 block text-lg font-extrabold text-secondary">
-              ${Number(item.price).toLocaleString('es-AR')}
+              ${item.price.toLocaleString('es-AR')}
             </span>
           </div>
 
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            aria-label={
-              isAdded
-                ? `${item.para} agregado al carrito`
-                : `Agregar ${item.para} al carrito`
-            }
-            className={`
-              flex h-11 w-11 shrink-0
-              items-center justify-center
+          <span
+            className="
+              inline-flex items-center gap-1.5
               rounded-xl
-              text-white
-              shadow-md
-              transition-all duration-300
-              hover:-translate-y-0.5
-              active:scale-95
-              focus:outline-none
-              focus:ring-2
-              focus:ring-primary/30
-
-              ${
-                isAdded
-                  ? 'bg-green-500 shadow-green-500/20'
-                  : 'bg-secondary shadow-secondary/15 hover:bg-primary hover:shadow-primary/20'
-              }
-            `}
+              bg-primary/10
+              px-3 py-2
+              text-xs font-semibold
+              text-primary
+            "
           >
             <i
-              className={`fa-solid ${
-                isAdded ? 'fa-check' : 'fa-cart-plus'
-              } text-sm`}
+              className="fa-solid fa-arrow-trend-up text-[10px]"
+              aria-hidden="true"
             />
-          </button>
+
+            Destacado
+          </span>
         </div>
       </div>
     </article>
@@ -248,27 +238,32 @@ interface TopCartProps {
   topItems: TopItem[];
 }
 
-export const TopCart: React.FC<TopCartProps> = ({ topItems }) => {
+export const TopCart = ({ topItems }: TopCartProps) => {
   if (!topItems.length) {
     return (
-      <div className="
-        flex min-h-[250px]
-        items-center justify-center
-        rounded-2xl
-        border border-dashed border-black/10
-        bg-white/60
-        px-6
-        text-center
-      ">
+      <div
+        className="
+          flex min-h-[250px]
+          items-center justify-center
+          rounded-2xl
+          border border-dashed border-black/10
+          bg-white/60
+          px-6
+          text-center
+        "
+      >
         <div>
-          <div className="
-            mx-auto mb-4
-            flex h-14 w-14
-            items-center justify-center
-            rounded-2xl
-            bg-primary/10
-            text-primary
-          ">
+          <div
+            className="
+              mx-auto mb-4
+              flex h-14 w-14
+              items-center justify-center
+              rounded-2xl
+              bg-primary/10
+              text-primary
+            "
+            aria-hidden="true"
+          >
             <i className="fa-solid fa-border-all text-xl" />
           </div>
 
@@ -319,7 +314,10 @@ export const TopCart: React.FC<TopCartProps> = ({ topItems }) => {
     <div className="relative px-2 sm:px-4">
       <Slider {...settings}>
         {topItems.map((item) => (
-          <TopProductCard key={item.id} item={item} />
+          <TopProductCard
+            key={item.id}
+            item={item}
+          />
         ))}
       </Slider>
     </div>

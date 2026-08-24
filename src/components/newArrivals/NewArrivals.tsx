@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import ArrivalsGrid from './ArrivalsGrid';
 import { Product } from '../../types';
@@ -7,18 +6,17 @@ interface NewArrivalsProps {
   arrivalsItems: Product[];
 }
 
-export const NewArrivals: React.FC<NewArrivalsProps> = ({
+export const NewArrivals = ({
   arrivalsItems,
-}) => {
+}: NewArrivalsProps) => {
   return (
     <section
       aria-labelledby="new-arrivals-title"
       className="w-full bg-background py-10 sm:py-12 lg:py-14"
     >
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-
-        {/* Encabezado */}
-        <div className="mb-6 flex items-end justify-between gap-4 sm:mb-8">
+        {/* Header */}
+        <header className="mb-6 flex items-end justify-between gap-4 sm:mb-8">
           <div className="flex min-w-0 items-center gap-3">
             <div
               className="
@@ -67,6 +65,7 @@ export const NewArrivals: React.FC<NewArrivalsProps> = ({
               focus:outline-none
               focus-visible:ring-2
               focus-visible:ring-primary/30
+              focus-visible:ring-offset-2
             "
           >
             <span className="hidden sm:inline">
@@ -87,9 +86,9 @@ export const NewArrivals: React.FC<NewArrivalsProps> = ({
               aria-hidden="true"
             />
           </Link>
-        </div>
+        </header>
 
-        {/* Productos */}
+        {/* Products */}
         <ArrivalsGrid arrivalsItems={arrivalsItems} />
       </div>
     </section>

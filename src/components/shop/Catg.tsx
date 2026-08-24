@@ -1,62 +1,56 @@
-import React from 'react';
-
 interface CatgProps {
   selectedCategory: string | null;
   setSelectedCategory: (category: string | null) => void;
 }
 
 interface CategoryOption {
-  cateName: string;
-  category: string;
+  label: string;
+  value: string | null;
   icon: string;
 }
 
 const categories: CategoryOption[] = [
   {
-    cateName: 'Todos los productos',
-    category: 'all',
+    label: 'Todos los productos',
+    value: null,
     icon: 'fa-border-all',
   },
   {
-    cateName: 'Phones',
-    category: 'phone',
+    label: 'Phones',
+    value: 'phone',
     icon: 'fa-mobile-screen-button',
   },
   {
-    cateName: 'PlayStation',
-    category: 'playstation',
+    label: 'PlayStation',
+    value: 'playstation',
     icon: 'fa-gamepad',
   },
   {
-    cateName: 'Xbox',
-    category: 'xbox',
+    label: 'Xbox',
+    value: 'xbox',
     icon: 'fa-gamepad',
   },
   {
-    cateName: 'Watch',
-    category: 'watch',
+    label: 'Watch',
+    value: 'watch',
     icon: 'fa-clock',
   },
   {
-    cateName: 'Glasses',
-    category: 'glasses',
+    label: 'Glasses',
+    value: 'glasses',
     icon: 'fa-glasses',
   },
   {
-    cateName: 'Headphones',
-    category: 'headphones',
+    label: 'Headphones',
+    value: 'headphones',
     icon: 'fa-headphones',
   },
 ];
 
-const Catg: React.FC<CatgProps> = ({
+const Catg = ({
   selectedCategory,
   setSelectedCategory,
-}) => {
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category === 'all' ? null : category);
-  };
-
+}: CatgProps) => {
   return (
     <aside
       className="
@@ -70,7 +64,7 @@ const Catg: React.FC<CatgProps> = ({
       "
       aria-label="Filtrar productos por categoría"
     >
-      {/* Encabezado */}
+      {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
@@ -96,19 +90,21 @@ const Catg: React.FC<CatgProps> = ({
         </span>
       </div>
 
-      {/* Lista */}
-      <div className="space-y-1.5">
+      {/* Categories */}
+      <div
+        className="space-y-1.5"
+        role="group"
+        aria-label="Categorías disponibles"
+      >
         {categories.map((item) => {
           const isActive =
-            item.category === 'all'
-              ? selectedCategory === null
-              : selectedCategory === item.category;
+            selectedCategory === item.value;
 
           return (
             <button
-              key={item.category}
+              key={item.value ?? 'all'}
               type="button"
-              onClick={() => handleCategoryChange(item.category)}
+              onClick={() => setSelectedCategory(item.value)}
               aria-pressed={isActive}
               className={`
                 group flex w-full items-center gap-3
@@ -136,7 +132,7 @@ const Catg: React.FC<CatgProps> = ({
                 }
               `}
             >
-              {/* Icono */}
+              {/* Icon */}
               <span
                 className={`
                   flex h-9 w-9 shrink-0
@@ -157,15 +153,17 @@ const Catg: React.FC<CatgProps> = ({
                 `}
                 aria-hidden="true"
               >
-                <i className={`fa-solid ${item.icon} text-sm`} />
+                <i
+                  className={`fa-solid ${item.icon} text-sm`}
+                />
               </span>
 
-              {/* Texto */}
+              {/* Label */}
               <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                {item.cateName}
+                {item.label}
               </span>
 
-              {/* Indicador */}
+              {/* Indicator */}
               <span
                 className={`
                   flex h-6 w-6 shrink-0
@@ -199,10 +197,14 @@ const Catg: React.FC<CatgProps> = ({
         })}
       </div>
 
-      {/* Indicador inferior */}
+      {/* Helper text */}
       <div className="mt-4 border-t border-black/[0.06] pt-4">
         <p className="flex items-center gap-2 text-[11px] text-gray-400">
-          <i className="fa-solid fa-circle-info text-[10px] text-primary" />
+          <i
+            className="fa-solid fa-circle-info text-[10px] text-primary"
+            aria-hidden="true"
+          />
+
           Seleccioná una categoría para filtrar.
         </p>
       </div>

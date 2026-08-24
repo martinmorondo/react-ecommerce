@@ -3,7 +3,7 @@ export interface Product {
   name: string;
   price: number;
   cover: string;
-  discount?: number; 
+  discount?: number;
 }
 
 export interface CartItem extends Product {

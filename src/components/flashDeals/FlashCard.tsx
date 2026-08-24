@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ReactSlick, { CustomArrowProps } from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -7,11 +7,17 @@ import { Product } from '../../types';
 
 const Slider = ReactSlick.default || ReactSlick;
 
+const formatPrice = (price: number) =>
+  price.toLocaleString('es-AR', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
 /* ---------------------------------- */
 /* Flechas del carrusel */
 /* ---------------------------------- */
 
-const NextArrow: React.FC<CustomArrowProps> = ({ onClick }) => {
+const NextArrow = ({ onClick }: CustomArrowProps) => {
   return (
     <button
       type="button"
@@ -34,18 +40,22 @@ const NextArrow: React.FC<CustomArrowProps> = ({ onClick }) => {
         hover:shadow-primary/20
         active:scale-95
         focus:outline-none
-        focus:ring-2
-        focus:ring-primary/30
+        focus-visible:ring-2
+        focus-visible:ring-primary/30
+        focus-visible:ring-offset-2
         md:right-1
         md:h-11 md:w-11
       "
     >
-      <i className="fa-solid fa-chevron-right text-xs" />
+      <i
+        className="fa-solid fa-chevron-right text-xs"
+        aria-hidden="true"
+      />
     </button>
   );
 };
 
-const PrevArrow: React.FC<CustomArrowProps> = ({ onClick }) => {
+const PrevArrow = ({ onClick }: CustomArrowProps) => {
   return (
     <button
       type="button"
@@ -69,13 +79,17 @@ const PrevArrow: React.FC<CustomArrowProps> = ({ onClick }) => {
         hover:shadow-primary/20
         active:scale-95
         focus:outline-none
-        focus:ring-2
-        focus:ring-primary/30
+        focus-visible:ring-2
+        focus-visible:ring-primary/30
+        focus-visible:ring-offset-2
         md:left-1
         md:h-11 md:w-11
       "
     >
-      <i className="fa-solid fa-chevron-left text-xs" />
+      <i
+        className="fa-solid fa-chevron-left text-xs"
+        aria-hidden="true"
+      />
     </button>
   );
 };
@@ -88,32 +102,50 @@ interface FlashProductCardProps {
   productItem: Product;
 }
 
-const FlashProductCard: React.FC<FlashProductCardProps> = ({
+const FlashProductCard = ({
   productItem,
-}) => {
+}: FlashProductCardProps) => {
   const addToCart = useCartStore((state) => state.addToCart);
-  const wishlist = useCartStore((state) => state.wishlist);
-  const toggleWishlist = useCartStore((state) => state.toggleWishlist);
-
-  const [isAdded, setIsAdded] = useState(false);
-
-  const isFavorite = wishlist.some(
-    (item) => item.id === productItem.id
+  const toggleWishlist = useCartStore(
+    (state) => state.toggleWishlist
   );
 
-  const discount = Number(productItem.discount ?? 0);
+  const isFavorite = useCartStore((state) =>
+    state.wishlist.some(
+      (item) => item.id === productItem.id
+    )
+  );
+
+  const [isAdded, setIsAdded] = useState(false);
+  const addedTimeoutRef = useRef<number | null>(null);
+
+  const discount = productItem.discount ?? 0;
 
   const originalPrice =
     discount > 0
-      ? Number(productItem.price) / (1 - discount / 100)
-      : Number(productItem.price);
+      ? productItem.price / (1 - discount / 100)
+      : productItem.price;
+
+  useEffect(() => {
+    return () => {
+      if (addedTimeoutRef.current !== null) {
+        window.clearTimeout(addedTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleAddToCart = () => {
     addToCart(productItem);
+
     setIsAdded(true);
 
-    window.setTimeout(() => {
+    if (addedTimeoutRef.current !== null) {
+      window.clearTimeout(addedTimeoutRef.current);
+    }
+
+    addedTimeoutRef.current = window.setTimeout(() => {
       setIsAdded(false);
+      addedTimeoutRef.current = null;
     }, 1200);
   };
 
@@ -134,26 +166,34 @@ const FlashProductCard: React.FC<FlashProductCardProps> = ({
         "
       >
         {/* Imagen */}
-        <div className="
-          relative flex h-[205px]
-          items-center justify-center
-          overflow-hidden
-          bg-gradient-to-b from-gray-50 to-white
-          p-5
-        ">
+        <div
+          className="
+            relative flex h-[205px]
+            items-center justify-center
+            overflow-hidden
+            bg-gradient-to-b from-gray-50 to-white
+            p-5
+          "
+        >
           {/* Badge */}
           {discount > 0 && (
-            <div className="
-              absolute left-3 top-3 z-10
-              flex items-center gap-1.5
-              rounded-full
-              bg-primary
-              px-3 py-1.5
-              text-[10px] font-extrabold uppercase tracking-wider
-              text-white
-              shadow-lg shadow-primary/20
-            ">
-              <i className="fa-solid fa-bolt text-[8px]" />
+            <div
+              className="
+                absolute left-3 top-3 z-10
+                flex items-center gap-1.5
+                rounded-full
+                bg-primary
+                px-3 py-1.5
+                text-[10px] font-extrabold uppercase tracking-wider
+                text-white
+                shadow-lg shadow-primary/20
+              "
+            >
+              <i
+                className="fa-solid fa-bolt text-[8px]"
+                aria-hidden="true"
+              />
+
               -{discount}%
             </div>
           )}
@@ -180,8 +220,8 @@ const FlashProductCard: React.FC<FlashProductCardProps> = ({
               transition-all duration-300
               hover:scale-110
               focus:outline-none
-              focus:ring-2
-              focus:ring-primary/30
+              focus-visible:ring-2
+              focus-visible:ring-primary/30
 
               ${
                 isFavorite
@@ -196,6 +236,7 @@ const FlashProductCard: React.FC<FlashProductCardProps> = ({
                   ? 'fa-solid fa-heart'
                   : 'fa-regular fa-heart'
               } text-sm`}
+              aria-hidden="true"
             />
           </button>
 
@@ -212,23 +253,32 @@ const FlashProductCard: React.FC<FlashProductCardProps> = ({
             "
           />
 
-          <div className="
-            pointer-events-none
-            absolute inset-x-0 bottom-0
-            h-16
-            bg-gradient-to-t from-black/[0.04] to-transparent
-          " />
+          <div
+            className="
+              pointer-events-none
+              absolute inset-x-0 bottom-0
+              h-16
+              bg-gradient-to-t from-black/[0.04] to-transparent
+            "
+            aria-hidden="true"
+          />
         </div>
 
         {/* Contenido */}
         <div className="flex flex-1 flex-col p-4">
           <div className="flex-1">
-            <span className="
-              inline-flex items-center gap-1
-              text-[9px] font-bold uppercase tracking-[0.14em]
-              text-primary
-            ">
-              <i className="fa-solid fa-bolt text-[8px]" />
+            <span
+              className="
+                inline-flex items-center gap-1
+                text-[9px] font-bold uppercase tracking-[0.14em]
+                text-primary
+              "
+            >
+              <i
+                className="fa-solid fa-bolt text-[8px]"
+                aria-hidden="true"
+              />
+
               Oferta flash
             </span>
 
@@ -248,8 +298,14 @@ const FlashProductCard: React.FC<FlashProductCardProps> = ({
             </h3>
 
             {/* Rating */}
-            <div className="mt-3 flex items-center gap-2">
-              <div className="flex gap-0.5 text-[10px] text-amber-400">
+            <div
+              className="mt-3 flex items-center gap-2"
+              aria-label="Calificación 4.8 de 5"
+            >
+              <div
+                className="flex gap-0.5 text-[10px] text-amber-400"
+                aria-hidden="true"
+              >
                 <i className="fa-solid fa-star" />
                 <i className="fa-solid fa-star" />
                 <i className="fa-solid fa-star" />
@@ -264,29 +320,30 @@ const FlashProductCard: React.FC<FlashProductCardProps> = ({
           </div>
 
           {/* Precio */}
-          <div className="
-            mt-4
-            border-t border-black/[0.06]
-            pt-4
-          ">
+          <div
+            className="
+              mt-4
+              border-t border-black/[0.06]
+              pt-4
+            "
+          >
             <div className="flex items-end justify-between gap-3">
               <div>
                 {discount > 0 && (
-                  <span className="
-                    block text-xs text-gray-400
-                    line-through
-                  ">
-                    ${Math.round(originalPrice).toLocaleString('es-AR')}
+                  <span className="block text-xs text-gray-400 line-through">
+                    ${formatPrice(Math.round(originalPrice))}
                   </span>
                 )}
 
-                <span className="
-                  mt-0.5 block
-                  text-xl font-extrabold
-                  tracking-tight
-                  text-secondary
-                ">
-                  ${Number(productItem.price).toLocaleString('es-AR')}
+                <span
+                  className="
+                    mt-0.5 block
+                    text-xl font-extrabold
+                    tracking-tight
+                    text-secondary
+                  "
+                >
+                  ${formatPrice(productItem.price)}
                 </span>
               </div>
 
@@ -309,8 +366,9 @@ const FlashProductCard: React.FC<FlashProductCardProps> = ({
                   hover:-translate-y-0.5
                   active:scale-95
                   focus:outline-none
-                  focus:ring-2
-                  focus:ring-primary/30
+                  focus-visible:ring-2
+                  focus-visible:ring-primary/30
+                  focus-visible:ring-offset-2
 
                   ${
                     isAdded
@@ -323,8 +381,18 @@ const FlashProductCard: React.FC<FlashProductCardProps> = ({
                   className={`fa-solid ${
                     isAdded ? 'fa-check' : 'fa-cart-plus'
                   } text-sm`}
+                  aria-hidden="true"
                 />
               </button>
+
+              <span
+                className="sr-only"
+                aria-live="polite"
+              >
+                {isAdded
+                  ? `${productItem.name} agregado al carrito`
+                  : ''}
+              </span>
             </div>
           </div>
         </div>
@@ -341,27 +409,32 @@ interface FlashCardProps {
   productItems: Product[];
 }
 
-const FlashCard: React.FC<FlashCardProps> = ({ productItems }) => {
+const FlashCard = ({ productItems }: FlashCardProps) => {
   if (!productItems.length) {
     return (
-      <div className="
-        flex min-h-[280px]
-        items-center justify-center
-        rounded-2xl
-        border border-dashed border-black/10
-        bg-white/60
-        px-6
-        text-center
-      ">
+      <div
+        className="
+          flex min-h-[280px]
+          items-center justify-center
+          rounded-2xl
+          border border-dashed border-black/10
+          bg-white/60
+          px-6
+          text-center
+        "
+      >
         <div>
-          <div className="
-            mx-auto mb-4
-            flex h-14 w-14
-            items-center justify-center
-            rounded-2xl
-            bg-primary/10
-            text-primary
-          ">
+          <div
+            className="
+              mx-auto mb-4
+              flex h-14 w-14
+              items-center justify-center
+              rounded-2xl
+              bg-primary/10
+              text-primary
+            "
+            aria-hidden="true"
+          >
             <i className="fa-solid fa-bolt text-xl" />
           </div>
 

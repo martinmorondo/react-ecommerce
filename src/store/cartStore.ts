@@ -19,6 +19,8 @@ interface CartState {
   getTotalPrice: () => number;
 }
 
+const STORAGE_KEY = 'ecommerce-cart-storage';
+
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
@@ -29,38 +31,38 @@ export const useCartStore = create<CartState>()(
       // CART
       // ==============================
 
-      addToCart: (product: Product) => {
+      addToCart: (product) => {
         set((state) => {
           const existingItem = state.cartItem.find(
             (item) => item.id === product.id
           );
 
-          if (existingItem) {
+          if (!existingItem) {
             return {
-              cartItem: state.cartItem.map((item) =>
-                item.id === product.id
-                  ? {
-                      ...item,
-                      qty: item.qty + 1,
-                    }
-                  : item
-              ),
+              cartItem: [
+                ...state.cartItem,
+                {
+                  ...product,
+                  qty: 1,
+                },
+              ],
             };
           }
 
           return {
-            cartItem: [
-              ...state.cartItem,
-              {
-                ...product,
-                qty: 1,
-              },
-            ],
+            cartItem: state.cartItem.map((item) =>
+              item.id === product.id
+                ? {
+                    ...item,
+                    qty: item.qty + 1,
+                  }
+                : item
+            ),
           };
         });
       },
 
-      decreaseQty: (product: Product) => {
+      decreaseQty: (product) => {
         set((state) => {
           const existingItem = state.cartItem.find(
             (item) => item.id === product.id
@@ -91,7 +93,7 @@ export const useCartStore = create<CartState>()(
         });
       },
 
-      removeFromCart: (product: Product) => {
+      removeFromCart: (product) => {
         set((state) => ({
           cartItem: state.cartItem.filter(
             (item) => item.id !== product.id
@@ -109,7 +111,7 @@ export const useCartStore = create<CartState>()(
       // WISHLIST
       // ==============================
 
-      toggleWishlist: (product: Product) => {
+      toggleWishlist: (product) => {
         set((state) => {
           const exists = state.wishlist.some(
             (item) => item.id === product.id
@@ -129,7 +131,7 @@ export const useCartStore = create<CartState>()(
         });
       },
 
-      removeFromWishlist: (product: Product) => {
+      removeFromWishlist: (product) => {
         set((state) => ({
           wishlist: state.wishlist.filter(
             (item) => item.id !== product.id
@@ -144,7 +146,7 @@ export const useCartStore = create<CartState>()(
       },
 
       // ==============================
-      // DERIVED
+      // DERIVED VALUES
       // ==============================
 
       getTotalItems: () => {
@@ -156,14 +158,13 @@ export const useCartStore = create<CartState>()(
 
       getTotalPrice: () => {
         return get().cartItem.reduce(
-          (total, item) =>
-            total + Number(item.price) * item.qty,
+          (total, item) => total + item.price * item.qty,
           0
         );
       },
     }),
     {
-      name: 'ecommerce-cart-storage',
+      name: STORAGE_KEY,
 
       partialize: (state) => ({
         cartItem: state.cartItem,

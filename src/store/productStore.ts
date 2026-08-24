@@ -1,10 +1,9 @@
 import { create } from 'zustand';
 import Data from '../components/Data';
 import Sdata from '../components/shop/Sdata';
-import Tdata from '../components/top/Tdata';
+import Tdata, { TopItem } from '../components/top/Tdata';
 import Ndata from '../components/newArrivals/Ndata';
 import { Product } from '../types';
-import { TopItem } from '../components/top/Tdata';
 
 interface CatalogProducts {
   flashDeals: Product[];
@@ -31,15 +30,31 @@ const initialProducts: CatalogProducts = {
   newArrivals: [],
 };
 
+const buildCatalog = (): CatalogProducts => ({
+  flashDeals: Data.productItems,
+  shopItems: Sdata.shopItems,
+  topCategories: Tdata.topItems,
+  newArrivals: Ndata.arrivalsItems,
+});
+
+const simulateRequest = async (): Promise<CatalogProducts> => {
+  await new Promise<void>((resolve) => {
+    setTimeout(resolve, 800);
+  });
+
+  return buildCatalog();
+};
+
 export const useProductStore = create<ProductState>((set) => ({
   products: initialProducts,
+
   isLoading: false,
   hasLoaded: false,
   error: null,
 
-  /* =====================================================
-     CARGAR PRODUCTOS
-     ===================================================== */
+  // ==============================
+  // LOAD PRODUCTS
+  // ==============================
 
   fetchProducts: async () => {
     set({
@@ -48,19 +63,7 @@ export const useProductStore = create<ProductState>((set) => ({
     });
 
     try {
-      /*
-       * Simulación temporal de una petición.
-       * Cuando conectes una API real, reemplazá este bloque
-       * por fetch / axios.
-       */
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      const products: CatalogProducts = {
-        flashDeals: Data.productItems ?? [],
-        shopItems: Sdata.shopItems ?? [],
-        topCategories: Tdata.topItems ?? [],
-        newArrivals: Ndata.arrivalsItems ?? [],
-      };
+      const products = await simulateRequest();
 
       set({
         products,
@@ -68,7 +71,7 @@ export const useProductStore = create<ProductState>((set) => ({
         hasLoaded: true,
         error: null,
       });
-    } catch (_error) {
+    } catch {
       set({
         isLoading: false,
         hasLoaded: false,
@@ -78,9 +81,9 @@ export const useProductStore = create<ProductState>((set) => ({
     }
   },
 
-  /* =====================================================
-     ACTUALIZAR PRODUCTOS
-     ===================================================== */
+  // ==============================
+  // REFRESH PRODUCTS
+  // ==============================
 
   refreshProducts: async () => {
     set({
@@ -89,17 +92,7 @@ export const useProductStore = create<ProductState>((set) => ({
     });
 
     try {
-      /*
-       * Acá también iría la petición real a la API.
-       */
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      const products: CatalogProducts = {
-        flashDeals: Data.productItems ?? [],
-        shopItems: Sdata.shopItems ?? [],
-        topCategories: Tdata.topItems ?? [],
-        newArrivals: Ndata.arrivalsItems ?? [],
-      };
+      const products = await simulateRequest();
 
       set({
         products,
@@ -107,18 +100,17 @@ export const useProductStore = create<ProductState>((set) => ({
         hasLoaded: true,
         error: null,
       });
-    } catch (_error) {
+    } catch {
       set({
         isLoading: false,
-        error:
-          'No pudimos actualizar el catálogo.',
+        error: 'No pudimos actualizar el catálogo.',
       });
     }
   },
 
-  /* =====================================================
-     LIMPIAR
-     ===================================================== */
+  // ==============================
+  // CLEAR
+  // ==============================
 
   clearProducts: () => {
     set({

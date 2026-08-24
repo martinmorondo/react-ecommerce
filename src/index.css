@@ -107,7 +107,6 @@ img {
   height: auto;
 }
 
-/* Evita pequeños problemas visuales al cargar imágenes */
 img:not([src]),
 img[src=''] {
   visibility: hidden;
@@ -129,10 +128,13 @@ button {
 }
 
 button:not(:disabled),
-select:not(:disabled),
+select:not(:disabled) {
+  cursor: pointer;
+}
+
 input:not(:disabled),
 textarea:not(:disabled) {
-  cursor: pointer;
+  cursor: text;
 }
 
 button:disabled,
@@ -228,7 +230,6 @@ html {
    UTILIDADES GLOBALES
    ========================================================= */
 
-/* Evita que elementos largos rompan el layout */
 button,
 a,
 p,
@@ -241,16 +242,6 @@ h6 {
   overflow-wrap: break-word;
 }
 
-/* Mejora la apariencia de campos en iOS */
-input,
-textarea,
-select {
-  appearance: none;
-  -webkit-appearance: none;
-  border-radius: 0;
-}
-
-/* Quita el comportamiento azul de tap en algunos móviles */
 button,
 a {
   -webkit-tap-highlight-color: transparent;
@@ -260,7 +251,6 @@ a {
    SLICK CAROUSEL
    ========================================================= */
 
-/* Evita pequeños desplazamientos horizontales del carrusel */
 .slick-slider {
   min-width: 0;
 }
@@ -281,26 +271,6 @@ a {
   height: 100%;
 }
 
-/* Evita que el estilo de Slick agregue márgenes extra */
-.slick-dots {
-  bottom: -25px;
-}
-
-.slick-dots li button::before {
-  font-size: 7px;
-  color: #0f3460;
-  opacity: 0.25;
-}
-
-.slick-dots li.slick-active button::before {
-  color: #e94560;
-  opacity: 1;
-}
-
 /* =========================================================
    ESTADOS DE CARGA / IMÁGENES
    ========================================================= */
-
-img[loading='lazy'] {
-  content-visibility: auto;
-}
