@@ -1,18 +1,36 @@
-import ReactSlick, { CustomArrowProps, Settings } from 'react-slick';
+import ReactSlickImport from 'react-slick';
+import type {
+  CustomArrowProps,
+  Settings,
+} from 'react-slick';
+
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { TopItem } from './Tdata';
 
+import type { TopItem } from './Tdata';
+
+/*
+ * Compatibilidad con la forma en que Vite/Rolldown
+ * puede resolver el módulo CommonJS de react-slick.
+ */
+const Slider =
+  (
+    ReactSlickImport as typeof ReactSlickImport & {
+      default?: typeof ReactSlickImport;
+    }
+  ).default ?? ReactSlickImport;
 
 /* =========================================================
    Flechas
    ========================================================= */
 
-const NextArrow = ({ onClick }: CustomArrowProps) => (
+const NextArrow = ({
+  onClick,
+}: CustomArrowProps) => (
   <button
     type="button"
     onClick={onClick}
-    aria-label="Siguiente categoría"
+    aria-label="Siguiente producto destacado"
     className="
       absolute right-0 top-1/2 z-20
       flex h-10 w-10
@@ -43,11 +61,13 @@ const NextArrow = ({ onClick }: CustomArrowProps) => (
   </button>
 );
 
-const PrevArrow = ({ onClick }: CustomArrowProps) => (
+const PrevArrow = ({
+  onClick,
+}: CustomArrowProps) => (
   <button
     type="button"
     onClick={onClick}
-    aria-label="Categoría anterior"
+    aria-label="Producto destacado anterior"
     className="
       absolute left-0 top-1/2 z-20
       flex h-10 w-10
@@ -159,6 +179,9 @@ const TopProductCard = ({
             mix-blend-multiply
             transition-transform duration-500
             group-hover:scale-105
+
+            motion-reduce:transition-none
+            motion-reduce:group-hover:scale-100
           "
         />
 
@@ -182,9 +205,7 @@ const TopProductCard = ({
             Producto destacado
           </p>
 
-          <h3
-            className="mt-1 text-sm font-semibold text-secondary"
-          >
+          <h3 className="mt-1 text-sm font-semibold text-secondary">
             {item.para}
           </h3>
         </div>
@@ -198,7 +219,7 @@ const TopProductCard = ({
         >
           <div>
             <span className="block text-[10px] uppercase tracking-wider text-gray-400">
-              Desde
+              Precio
             </span>
 
             <span className="mt-0.5 block text-lg font-extrabold text-secondary">
@@ -237,7 +258,9 @@ interface TopCartProps {
   topItems: TopItem[];
 }
 
-export const TopCart = ({ topItems }: TopCartProps) => {
+export const TopCart = ({
+  topItems,
+}: TopCartProps) => {
   if (!topItems.length) {
     return (
       <div
@@ -250,6 +273,7 @@ export const TopCart = ({ topItems }: TopCartProps) => {
           px-6
           text-center
         "
+        role="status"
       >
         <div>
           <div
@@ -263,11 +287,11 @@ export const TopCart = ({ topItems }: TopCartProps) => {
             "
             aria-hidden="true"
           >
-            <i className="fa-solid fa-border-all text-xl" />
+            <i className="fa-solid fa-star text-xl" />
           </div>
 
           <h3 className="font-bold text-secondary">
-            No hay categorías disponibles
+            No hay productos destacados
           </h3>
 
           <p className="mt-1 text-sm text-gray-500">
@@ -284,14 +308,19 @@ export const TopCart = ({ topItems }: TopCartProps) => {
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
+
     autoplay: topItems.length > 3,
     autoplaySpeed: 5000,
+
     pauseOnHover: true,
     pauseOnFocus: true,
     swipeToSlide: true,
+
     arrows: topItems.length > 1,
+
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
+
     responsive: [
       {
         breakpoint: 1024,
@@ -311,14 +340,14 @@ export const TopCart = ({ topItems }: TopCartProps) => {
 
   return (
     <div className="relative px-2 sm:px-4">
-      <ReactSlick {...settings}>
+      <Slider {...settings}>
         {topItems.map((item) => (
           <TopProductCard
             key={item.id}
             item={item}
           />
         ))}
-      </ReactSlick>
+      </Slider>
     </div>
   );
 };

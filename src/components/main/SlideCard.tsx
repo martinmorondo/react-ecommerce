@@ -1,7 +1,13 @@
-import ReactSlick, {
+import ReactSlickImport, {
   CustomArrowProps,
   Settings,
 } from 'react-slick';
+
+const Slider =
+  (ReactSlickImport as typeof ReactSlickImport & {
+    default?: typeof ReactSlickImport;
+  }).default ?? ReactSlickImport;
+
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { Link } from 'react-router-dom';
@@ -196,7 +202,7 @@ const SlideCard = () => {
         aria-hidden="true"
       />
 
-      <ReactSlick {...settings}>
+      <Slider {...settings}>
         {Sdata.map((slide: SlideData, index) => (
           <article
             key={slide.id}
@@ -595,7 +601,7 @@ const SlideCard = () => {
             </div>
           </article>
         ))}
-      </ReactSlick>
+      </Slider>
     </section>
   );
 };

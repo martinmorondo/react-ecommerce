@@ -1,14 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import ReactSlick, {
-  CustomArrowProps,
-  Settings,
-} from 'react-slick';
+import ReactSlickImport from 'react-slick';
+import type { CustomArrowProps, Settings } from 'react-slick';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 import { useCartStore } from '../../store/cartStore';
-import { Product } from '../../types';
+import type { Product } from '../../types';
+
+const Slider =
+  (
+    ReactSlickImport as typeof ReactSlickImport & {
+      default?: typeof ReactSlickImport;
+    }
+  ).default ?? ReactSlickImport;
 
 
 /* =========================================================
@@ -688,14 +693,14 @@ const FlashCard = ({
         sm:px-4
       "
     >
-      <ReactSlick {...settings}>
+      <Slider {...settings}>
         {productItems.map((productItem) => (
           <FlashProductCard
             key={productItem.id}
             productItem={productItem}
           />
         ))}
-      </ReactSlick>
+      </Slider>
     </div>
   );
 };
